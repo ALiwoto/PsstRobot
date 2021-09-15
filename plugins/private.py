@@ -1,5 +1,5 @@
 """
-ezWhisperBot, Telegram Bot for sending whisper messages
+PsstRobot, Telegram Bot for sending whisper messages
 Copyright (C) 2021  Dash Eclipse
 
 This program is free software: you can redistribute it and/or modify
@@ -28,11 +28,11 @@ LEARN_TEXT = (
     "This bot works only in inline mode, a example use would be like "
     "this:\n\n"
     "- Write a whisper to @username\n"
-    "`@ezWhisperBot @username some text here`\n\n"
+    "`@PsstRobot @username some text here`\n\n"
     "- Write a whisper which anyone can read it multiple times\n"
-    "`@ezWhisperBot @ some text here`\n\n"
+    "`@PsstRobot @ some text here`\n\n"
     "- Whisper to the first one who open it (can also be used in PM)\n"
-    "`@ezWhisperBot some text here`"
+    "`@PsstRobot some text here`"
 )
 LEARN_REPLY_MARKUP = InlineKeyboardMarkup(
     [

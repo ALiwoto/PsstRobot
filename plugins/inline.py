@@ -1,5 +1,5 @@
 """
-ezWhisperBot, Telegram Bot for sending whisper messages
+PsstRobot, Telegram Bot for sending whisper messages
 Copyright (C) 2021  Dash Eclipse
 
 This program is free software: you can redistribute it and/or modify
@@ -48,11 +48,11 @@ async def answer_iq(_, iq: InlineQuery):
             or (query.startswith('@') and len(split) == 1):
         title = f"{emoji.FIRE} Write a whisper message"
         content = ("**Send whisper messages through inline mode**\n\n"
-                   "Usage: `@ezWhisperBot [@username|@] text`")
-        description = "Usage: @ezWhisperBot [@username|@] text"
+                   "Usage: `@PsstRobot [@username|@] text`")
+        description = "Usage: @PsstRobot [@username|@] text"
         button = InlineKeyboardButton(
             "Learn more...",
-            url="https://t.me/ezWhisperBot?start=learn"
+            url="https://t.me/PsstRobot?start=learn"
         )
     elif not query.startswith('@'):
         title = f"{emoji.EYE} Whisper once to the first one who open it"

@@ -1,4 +1,4 @@
-## ezWhisperBot
+## PsstRobot
 
 Telegram Bot for sending whisper messages
 
@@ -35,7 +35,7 @@ venv/bin/python3 bot.py
 AGPL-3.0-or-later
 
 ```
-ezWhisperBot, Telegram Bot for sending whisper messages
+PsstRobot, Telegram Bot for sending whisper messages
 Copyright (C) 2021  Dash Eclipse
 
 This program is free software: you can redistribute it and/or modify

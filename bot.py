@@ -15,7 +15,7 @@ plugins = dict(
 
 # logging.basicConfig(level=logging.DEBUG)
 print('>>> BOT STARTED')
-Client("ezWhisperBot", plugins=plugins).run()
+Client("PsstRobot", plugins=plugins).run()
 with open('data.json', 'w') as f:
     json.dump(whispers, f)
 print('\n>>> BOT STOPPED')
