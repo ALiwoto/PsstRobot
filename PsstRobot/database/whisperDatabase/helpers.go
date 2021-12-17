@@ -6,6 +6,7 @@ import (
 
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/wotoConfig"
 	wv "github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/wotoValues"
+	"github.com/PaulSonOfLars/gotgbot/v2"
 )
 
 func LoadAllWhispers() {
@@ -48,6 +49,24 @@ func AddWhisper(w *Whisper) {
 	whispersMutex.Lock()
 	whispersMap[w.UniqueId] = w
 	whispersMutex.Unlock()
+}
+
+func GetWhisper(uniqueId string) *Whisper {
+	whispersMutex.Lock()
+	w := whispersMap[uniqueId]
+	whispersMutex.Unlock()
+	return w
+}
+
+func CreateNewWhisper(result *gotgbot.ChosenInlineResult) *Whisper {
+	w := &Whisper{
+		Sender: result.From.Id,
+		Text:   result.Query,
+	}
+	w.ParseRecipient()
+	w.GenerateUniqueID()
+	AddWhisper(w)
+	return w
 }
 
 func RemoveWhisper(w *Whisper) {

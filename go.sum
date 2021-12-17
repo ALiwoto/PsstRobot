@@ -1,5 +1,8 @@
+github.com/ALiwoto/StrongStringGo v1.0.5/go.mod h1:t7WxtiphnwdgJaq443DSCAw7q+Ut3V8Pg1kT6IcdKmE=
 github.com/ALiwoto/StrongStringGo v1.0.9 h1:sQp7A0a3enAY9gvAU5kvzht+IexYZ/UEu3XyV/++GQU=
 github.com/ALiwoto/StrongStringGo v1.0.9/go.mod h1:t7WxtiphnwdgJaq443DSCAw7q+Ut3V8Pg1kT6IcdKmE=
+github.com/ALiwoto/mdparser v1.0.7 h1:tIorE6pZfLTLlmyaHEWa2bG9UpZzGYgTPcSxDshcO8w=
+github.com/ALiwoto/mdparser v1.0.7/go.mod h1:93EnoGxVukI17RVlKi/yW0UX7mtMaDTHbheZsishw7c=
 github.com/PaulSonOfLars/gotgbot/v2 v2.0.0-rc.3 h1:r3gTHVoTwNMCkr5cjF9y4LafqJhrS+FJYW6xpMT98sE=
 github.com/PaulSonOfLars/gotgbot/v2 v2.0.0-rc.3/go.mod h1:r815fYWTudnU9JhtsJAxUtuV7QrSgKpChJkfTSMFpfg=
 github.com/benbjohnson/clock v1.1.0 h1:Q92kusRqC1XV2MjkWETPvjJVqKetz1OzxZB7mHJLju8=
