@@ -5,6 +5,7 @@ import (
 
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/logging"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/wotoConfig"
+	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/database"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/plugins"
 )
 
@@ -17,6 +18,11 @@ func main() {
 	f := logging.LoadLogger()
 	if f != nil {
 		defer f()
+	}
+
+	err = database.StartDB()
+	if err != nil {
+		log.Fatal("Failed to start database: ", err)
 	}
 
 	err = plugins.StartTelegramBot()
