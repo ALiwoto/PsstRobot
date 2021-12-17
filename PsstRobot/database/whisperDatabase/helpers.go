@@ -31,7 +31,7 @@ func LoadAllWhispers() {
 
 		mutex.Unlock()
 	}
-	whispersMutex.Lock()
+	whispersMutex.Unlock()
 
 	go checkWhispers()
 }
