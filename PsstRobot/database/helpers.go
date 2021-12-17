@@ -1,6 +1,7 @@
 package database
 
 import (
+	"os"
 	"strconv"
 
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/logging"
@@ -30,8 +31,11 @@ func StartDB() error {
 		}
 		wv.Core.AddDBSession(db)
 	} else {
+		var current string
+		path := "Database" + string(os.PathSeparator)
 		for i := 0; i < wv.MultiDbLength; i++ {
-			db, err = gorm.Open(sqlite.Open("psstbot"+strconv.Itoa(i)+".db"), conf)
+			current = "psstbot" + strconv.Itoa(i) + ".db"
+			db, err = gorm.Open(sqlite.Open(path+current), conf)
 			if err != nil {
 				return err
 			}
