@@ -1,17 +1,47 @@
-# Python
-__pycache__/
-/venv/
+*.dll
+*.pdb
+*.mdb
+botBinary
+.env
+.docker_build/
+bin/
+*.exe
+vendor/
+sibylBinary
+*.old.go
+woto_files/
+tmp_files/
+labs/
+*.old.go
+*.db
+*.log
+docs/out/
 
-# Vim
-[._]*.sw[a-p]
+# ignore database directory and files
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.db-shm-journal
+*.db-shm-tmp
+*.db-tmp
+*.sqlite-shm
+*.sqlite-shm-journal
+*.sqlite-shm-tmp
+*.sqlite-tmp
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm
+*.sqlite3-shm-journal
+*.sqlite3-shm-tmp
+*.sqlite3-tmp
 
-# Pycharm
-/.idea/
+# ignore debug binary file
+__debug_bin
 
-# Pyrogram
-/config.ini
-/*.session
-/*.session-journal
+# ignore config file
+config.ini
+*.token
+triggers.json
 
-# PsstRobot
-/*.json
