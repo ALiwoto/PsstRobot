@@ -4,7 +4,7 @@ buildApp()
 	# clear the screen (the terminal)
 	clear
 
-	echo -e "building anti-channel Bot, please wait a bit..."
+	echo -e "building psst Bot, please wait a bit..."
 
 	go build -o botBinary
 }
@@ -14,7 +14,7 @@ runApp()
 	# clear the screen (the terminal)
 	clear
 
-	echo -e "we are done building it,\n->now running the anti-channel Bot Bot...\n-------------------"
+	echo -e "we are done building it,\n->now running the psst Bot...\n-------------------"
 
 	./botBinary
 }
