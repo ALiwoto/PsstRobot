@@ -22,7 +22,7 @@ func main() {
 
 	err = database.StartDB()
 	if err != nil {
-		log.Fatal("Failed to start database: ", err)
+		logging.Fatal("Failed to start database: ", err)
 	}
 
 	err = plugins.StartTelegramBot()

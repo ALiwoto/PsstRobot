@@ -12,6 +12,7 @@ func (w *WotoCore) GenerateSessionCollection(single bool) {
 	w.SessionCollection = &SessionCollection{
 		isSingle: single,
 	}
+	w.SessionCollection.GenerateMutexes()
 }
 
 func (w *WotoCore) AddDBSession(session *gorm.DB) {
@@ -120,6 +121,10 @@ func (c *SessionCollection) GenerateMutexes() {
 	c.SessionMutexes = make(map[int]*sync.Mutex, MultiDbLength)
 	for i := 0; i < MultiDbLength; i++ {
 		c.SessionMutexes[i] = &sync.Mutex{}
+	}
+
+	if c.SessionMap == nil {
+		c.SessionMap = make(map[int]*gorm.DB)
 	}
 }
 
