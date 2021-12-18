@@ -84,7 +84,7 @@ func (w *Whisper) ParseRecipient() {
 	// message @username
 	// ID message
 	// message ID
-	myStrs := strings.Split(w.Text, " ")
+	myStrs := strings.Fields(w.Text)
 	if myStrs[0][0] == '@' {
 		w.RecipientUsername = myStrs[0]
 		w.Text = strings.Join(myStrs[1:], " ")
