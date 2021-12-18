@@ -108,7 +108,7 @@ func (w *Whisper) ParseRecipient() {
 	id, err = strconv.ParseInt(myStrs[last], 10, 64)
 	if err == nil {
 		w.Recipient = id
-		w.Text = strings.Join(myStrs[1:], " ")
+		w.Text = strings.Join(myStrs[:last], " ")
 		return
 	}
 
