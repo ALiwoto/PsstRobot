@@ -48,6 +48,11 @@ func (w *Whisper) ParseAsMd() mdparser.WMarkDown {
 	return md
 }
 
+func (w *Whisper) canMathUsername(username string) bool {
+	return strings.EqualFold(w.RecipientUsername, "@"+username) ||
+		strings.EqualFold(w.RecipientUsername, username)
+}
+
 func (w *Whisper) CanRead(u *gotgbot.User) bool {
 	if u == nil {
 		return false
@@ -59,7 +64,7 @@ func (w *Whisper) CanRead(u *gotgbot.User) bool {
 			return true
 		}
 
-		if w.RecipientUsername == "@"+u.Username || w.RecipientUsername == u.Username {
+		if w.canMathUsername(u.Username) {
 			return true
 		}
 	} else if u.Id == w.Recipient {

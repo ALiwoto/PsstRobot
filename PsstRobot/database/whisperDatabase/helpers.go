@@ -77,6 +77,10 @@ func RemoveWhisper(w *Whisper) {
 	tx.Delete(w)
 	tx.Commit()
 	mutex.Unlock()
+
+	whispersMutex.Lock()
+	delete(whispersMap, w.UniqueId)
+	whispersMutex.Unlock()
 }
 
 func checkWhispers() {
