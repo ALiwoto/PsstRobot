@@ -83,6 +83,16 @@ func RemoveWhisper(w *Whisper) {
 	whispersMutex.Unlock()
 }
 
+func removeWhisperDB(w *Whisper) {
+	s := wv.Core.SessionCollection.GetSession(w.GetDBIndex())
+	mutex := wv.Core.SessionCollection.GetMutex(w.GetDBIndex())
+	mutex.Lock()
+	tx := s.Begin()
+	tx.Delete(w)
+	tx.Commit()
+	mutex.Unlock()
+}
+
 func checkWhispers() {
 	interval := wotoConfig.GetIntervalCheck()
 	expiry := wotoConfig.GetExpiry()
@@ -97,6 +107,9 @@ func checkWhispers() {
 		for _, whisper := range whispersMap {
 			if whisper.IsExpired(expiry) {
 				delete(whispersMap, whisper.UniqueId)
+
+				// prevent from deadlock
+				removeWhisperDB(whisper)
 			}
 		}
 		whispersMutex.Unlock()
