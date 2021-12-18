@@ -147,12 +147,13 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 			CacheTime: 5,
 		})
 		md := mdparser.GetUserMention(user.FirstName, user.Id)
-		md.AppendNormalThis(" read the whisper UwU")
+		md.AppendNormalThis(" read the whisper")
 		bot.EditMessageText(md.ToString(), &gotgbot.EditMessageTextOpts{
 			InlineMessageId:       query.InlineMessageId,
 			ParseMode:             "markdownv2",
 			DisableWebPagePreview: true,
 		})
+		whisperDatabase.RemoveWhisper(w)
 		return ext.EndGroups
 	}
 
