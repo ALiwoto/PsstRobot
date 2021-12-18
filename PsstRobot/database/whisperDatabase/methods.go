@@ -87,28 +87,28 @@ func (w *Whisper) ParseRecipient() {
 	myStrs := strings.Fields(w.Text)
 	if myStrs[0][0] == '@' {
 		w.RecipientUsername = myStrs[0]
-		w.Text = strings.Join(myStrs[1:], " ")
+		w.Text = strings.TrimPrefix(w.Text, myStrs[0])
 		return
 	}
 
 	last := len(myStrs) - 1
 	if myStrs[last][0] == '@' {
 		w.RecipientUsername = myStrs[last]
-		w.Text = strings.Join(myStrs[:last], " ")
+		w.Text = strings.TrimSuffix(w.Text, w.RecipientUsername)
 		return
 	}
 
 	id, err := strconv.ParseInt(myStrs[0], 10, 64)
 	if err == nil {
 		w.Recipient = id
-		w.Text = strings.Join(myStrs[1:], " ")
+		w.Text = strings.TrimPrefix(w.Text, myStrs[0])
 		return
 	}
 
 	id, err = strconv.ParseInt(myStrs[last], 10, 64)
 	if err == nil {
 		w.Recipient = id
-		w.Text = strings.Join(myStrs[:last], " ")
+		w.Text = strings.TrimSuffix(w.Text, myStrs[last])
 		return
 	}
 
