@@ -47,6 +47,7 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	}
 
 	if w.CanRead(user) {
+		go whisperDatabase.RemoveWhisper(w)
 		_, _ = query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
 			Text:      w.Text,
 			ShowAlert: true,
@@ -59,7 +60,6 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 			ParseMode:             "markdownv2",
 			DisableWebPagePreview: true,
 		})
-		whisperDatabase.RemoveWhisper(w)
 		return ext.EndGroups
 	}
 

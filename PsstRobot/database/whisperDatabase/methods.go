@@ -42,8 +42,13 @@ func (w *Whisper) ParseAsMd() mdparser.WMarkDown {
 		rec = strconv.FormatInt(w.Recipient, 10)
 	}
 
-	md.AppendNormalThis(rec)
-	md.AppendNormalThis(".\nOnly they can read the message.")
+	if rec != "0" {
+		md.AppendNormalThis(rec)
+		md.AppendNormalThis(".\nOnly they can read the message.")
+	} else {
+		md.AppendNormalThis("anyone.")
+		md.AppendNormalThis(".\nAnyone can read it!")
+	}
 
 	return md
 }
