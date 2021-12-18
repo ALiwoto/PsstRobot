@@ -95,6 +95,6 @@ func checkWhispers() {
 				delete(whispersMap, whisper.UniqueId)
 			}
 		}
-
+		whispersMutex.Unlock()
 	}
 }
