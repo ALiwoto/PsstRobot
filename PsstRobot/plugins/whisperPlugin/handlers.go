@@ -64,7 +64,7 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	}
 
 	_, _ = query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
-		Text:      "This is not for you onii-chan 🥺👉👈",
+		Text:      "This psst is not for you!",
 		ShowAlert: true,
 		CacheTime: 5,
 	})
@@ -118,7 +118,7 @@ func chosenWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	markup := &gotgbot.InlineKeyboardMarkup{}
 	markup.InlineKeyboard = make([][]gotgbot.InlineKeyboardButton, 1)
 	markup.InlineKeyboard[0] = append(markup.InlineKeyboard[0], gotgbot.InlineKeyboardButton{
-		Text:         "🔐 show message",
+		Text:         "🔐 Show message",
 		CallbackData: ShowWhisperData + sepChar + w.UniqueId,
 	})
 

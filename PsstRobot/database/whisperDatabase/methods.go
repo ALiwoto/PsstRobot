@@ -43,7 +43,7 @@ func (w *Whisper) ParseAsMd() mdparser.WMarkDown {
 	}
 
 	md.AppendNormalThis(rec)
-	md.AppendNormalThis(".\nOnly he/she can read the message.")
+	md.AppendNormalThis(".\nOnly they can read the message.")
 
 	return md
 }
