@@ -19,6 +19,11 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	user := ctx.EffectiveUser
 	myStrs := strings.Split(query.Data, sepChar)
 	if len(myStrs) < 2 {
+		_, _ = query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
+			Text:      "This whisper is not generated yet...",
+			ShowAlert: true,
+			CacheTime: 5,
+		})
 		return ext.EndGroups
 	}
 
@@ -49,7 +54,7 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		})
 		md := mdparser.GetUserMention(user.FirstName, user.Id)
 		md.AppendNormalThis(" read the whisper")
-		bot.EditMessageText(md.ToString(), &gotgbot.EditMessageTextOpts{
+		_, _ = bot.EditMessageText(md.ToString(), &gotgbot.EditMessageTextOpts{
 			InlineMessageId:       query.InlineMessageId,
 			ParseMode:             "markdownv2",
 			DisableWebPagePreview: true,
