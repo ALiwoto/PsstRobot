@@ -1,16 +1,20 @@
 package whisperDatabase
 
 import (
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/ALiwoto/mdparser/mdparser"
+	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/utils"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 )
 
 func (w *Whisper) IsExpired(d time.Duration) bool {
 	if w.CreatedAt.IsZero() {
+		// prevent from possible bugs of removing whisper
+		// before the actual expiry date...
 		w.CreatedAt = time.Now()
 		return false
 	}
@@ -58,6 +62,10 @@ func (w *Whisper) canMatchUsername(username string) bool {
 		strings.EqualFold(w.RecipientUsername, username)
 }
 
+func (w *Whisper) GetUrl(b *gotgbot.Bot) string {
+	return "http://t.me/" + b.Username + "?start=" + url.QueryEscape(w.UniqueId)
+}
+
 func (w *Whisper) CanRead(u *gotgbot.User) bool {
 	if u == nil {
 		return false
@@ -79,42 +87,21 @@ func (w *Whisper) CanRead(u *gotgbot.User) bool {
 	return false
 }
 
+func (w *Whisper) setText(value string) {
+	w.Text = strings.TrimSpace(value)
+}
+
 func (w *Whisper) ParseRecipient() {
-	if len(w.Text) == 0 {
+	r := utils.ExtractRecipient(w.Text)
+	if r == nil {
 		return
 	}
 
-	// supported formats:
-	// @username message
-	// message @username
-	// ID message
-	// message ID
-	myStrs := strings.Fields(w.Text)
-	if myStrs[0][0] == '@' {
-		w.RecipientUsername = myStrs[0]
-		w.Text = strings.TrimPrefix(w.Text, myStrs[0])
-		return
-	}
+	w.Recipient = r.TargetID
+	w.RecipientUsername = r.Username
+	w.setText(r.Text)
+}
 
-	last := len(myStrs) - 1
-	if myStrs[last][0] == '@' {
-		w.RecipientUsername = myStrs[last]
-		w.Text = strings.TrimSuffix(w.Text, w.RecipientUsername)
-		return
-	}
-
-	id, err := strconv.ParseInt(myStrs[0], 10, 64)
-	if err == nil {
-		w.Recipient = id
-		w.Text = strings.TrimPrefix(w.Text, myStrs[0])
-		return
-	}
-
-	id, err = strconv.ParseInt(myStrs[last], 10, 64)
-	if err == nil {
-		w.Recipient = id
-		w.Text = strings.TrimSuffix(w.Text, myStrs[last])
-		return
-	}
-
+func (w *Whisper) IsTooLong() bool {
+	return len(w.Text) > MaxTextLength
 }

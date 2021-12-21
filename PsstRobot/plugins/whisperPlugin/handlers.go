@@ -5,6 +5,7 @@ import (
 
 	"github.com/ALiwoto/mdparser/mdparser"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/logging"
+	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/utils"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/database/whisperDatabase"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
@@ -38,6 +39,15 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	}
 
 	if w.Sender == user.Id {
+		if w.IsTooLong() {
+			// redirect user to bot's pm
+			_, _ = query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
+				Url:       w.GetUrl(bot),
+				ShowAlert: true,
+				CacheTime: 5,
+			})
+			return ext.EndGroups
+		}
 		_, _ = query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
 			Text:      w.Text,
 			ShowAlert: true,
@@ -47,6 +57,16 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	}
 
 	if w.CanRead(user) {
+		if w.IsTooLong() {
+			// redirect user to bot's pm
+			_, _ = query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
+				Url:       w.GetUrl(bot),
+				ShowAlert: true,
+				CacheTime: 5,
+			})
+			return ext.EndGroups
+		}
+
 		go whisperDatabase.RemoveWhisper(w)
 		_, _ = query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
 			Text:      w.Text,
@@ -82,9 +102,38 @@ func sendWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		CallbackData: ShowWhisperData + sepChar,
 	})
 
+	var title string
+	var description string
+	if len(query.Query) > 2 && strings.Contains(strings.TrimSpace(query.Query), " ") {
+		result := utils.ExtractRecipient(query.Query)
+		if result.IsForEveryone() {
+			title = "📖 A whisper message to anyone!"
+			description = "Everyone will be able to open this whisper."
+		} else if result.TargetID > 0 {
+			var chat *gotgbot.Chat
+			var err error
+			chat, err = bot.GetChat(result.TargetID)
+			if err != nil && chat != nil {
+				title = "🔐 A whisper message to " + chat.Title
+			}
+		} else if result.Username != "" {
+			title = "🔐 A whisper message to " + result.Username
+		}
+
+	}
+
+	if title == "" {
+		title = "📍Send a whisper message to someone with their username or id"
+	}
+
+	if description == "" {
+		description = "Only they can open this whisper."
+	}
+
 	results = append(results, &gotgbot.InlineQueryResultArticle{
-		Id:    ctx.InlineQuery.Id,
-		Title: "Send a whisper message to someone with their username or id",
+		Id:          ctx.InlineQuery.Id,
+		Title:       "Send a whisper message to someone with their username or id",
+		Description: "Only they can open this whisper.",
 		InputMessageContent: &gotgbot.InputTextMessageContent{
 			MessageText:           "Generating whisper message...",
 			DisableWebPagePreview: true,

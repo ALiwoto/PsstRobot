@@ -83,6 +83,8 @@ func RemoveWhisper(w *Whisper) {
 	whispersMutex.Unlock()
 }
 
+// removeWhisperDB will remove the specified whisper ONLY from database.
+// this function is an internal function to prevent from deadlock.
 func removeWhisperDB(w *Whisper) {
 	s := wv.Core.SessionCollection.GetSession(w.GetDBIndex())
 	mutex := wv.Core.SessionCollection.GetMutex(w.GetDBIndex())
