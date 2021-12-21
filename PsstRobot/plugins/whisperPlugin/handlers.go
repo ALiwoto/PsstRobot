@@ -114,6 +114,10 @@ func sendWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	var description string
 	if len(query.Query) > 2 && strings.Contains(strings.TrimSpace(query.Query), " ") {
 		result := utils.ExtractRecipient(query.Query)
+		if !result.IsUsernameValid() {
+			return answerForHelp(bot, ctx)
+		}
+
 		if result.IsForEveryone() {
 			title = "📖 A whisper message to anyone!"
 			description = "Everyone will be able to open this whisper."
@@ -127,7 +131,11 @@ func sendWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		} else if result.Username != "" {
 			title = "🔐 A whisper message to " + result.Username
 		}
-
+	} else {
+		// seems like an invalid whisper...
+		// for the time being we will just show redirect button
+		// to them.
+		return answerForHelp(bot, ctx)
 	}
 
 	if title == "" {
@@ -149,12 +157,9 @@ func sendWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		ReplyMarkup: markup,
 	})
 
-	_, err := query.Answer(bot, results, &gotgbot.AnswerInlineQueryOpts{
+	_, _ = query.Answer(bot, results, &gotgbot.AnswerInlineQueryOpts{
 		IsPersonal: true,
 	})
-	if err != nil {
-		logging.Error(err)
-	}
 
 	// don't let another handlers to be executed
 	return ext.EndGroups

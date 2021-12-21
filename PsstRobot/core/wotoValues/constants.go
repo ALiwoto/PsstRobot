@@ -5,3 +5,8 @@ const (
 	MultiDbLastIndex  = 9
 	MultiDbFirstIndex = 0
 )
+
+const (
+	HelpDataInline  = "help-inline"
+	StartDataCreate = "create"
+)

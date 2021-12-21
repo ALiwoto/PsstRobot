@@ -1,6 +1,7 @@
 package whisperPlugin
 
 import (
+	wv "github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/wotoValues"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext/handlers"
@@ -9,7 +10,15 @@ import (
 func answerForLongAdvanced(bot *gotgbot.Bot, ctx *ext.Context) error {
 	_, _ = ctx.InlineQuery.Answer(bot, nil, &gotgbot.AnswerInlineQueryOpts{
 		SwitchPmText:      "Too long! Use an advanced whisper!",
-		SwitchPmParameter: "create",
+		SwitchPmParameter: wv.StartDataCreate,
+	})
+	return ext.EndGroups
+}
+
+func answerForHelp(bot *gotgbot.Bot, ctx *ext.Context) error {
+	_, _ = ctx.InlineQuery.Answer(bot, nil, &gotgbot.AnswerInlineQueryOpts{
+		SwitchPmText:      "🔹 Learn how to send whispers to your friends!",
+		SwitchPmParameter: wv.HelpDataInline,
 	})
 	return ext.EndGroups
 }
