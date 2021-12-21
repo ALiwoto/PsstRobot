@@ -34,14 +34,14 @@ func ExtractRecipient(value string) *ExtractedResult {
 	id, err := strconv.ParseInt(myStrs[0], 10, 64)
 	if err == nil && id > MinUserID {
 		result.TargetID = id
-		result.Text = strings.TrimPrefix(result.Text, myStrs[0])
+		result.Text = strings.TrimPrefix(value, myStrs[0])
 		return result
 	}
 
 	id, err = strconv.ParseInt(myStrs[last], 10, 64)
 	if err == nil {
 		result.TargetID = id
-		result.Text = strings.TrimSuffix(result.Text, myStrs[last])
+		result.Text = strings.TrimSuffix(value, myStrs[last])
 		return result
 	}
 

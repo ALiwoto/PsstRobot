@@ -68,11 +68,15 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		}
 
 		go whisperDatabase.RemoveWhisper(w)
-		_, _ = query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
+		_, err := query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
 			Text:      w.Text,
 			ShowAlert: true,
 			CacheTime: 5,
 		})
+		if err != nil {
+			logging.Error(err)
+		}
+
 		md := mdparser.GetUserMention(user.FirstName, user.Id)
 		md.AppendNormalThis(" read the whisper")
 		_, _ = bot.EditMessageText(md.ToString(), &gotgbot.EditMessageTextOpts{
@@ -171,7 +175,7 @@ func chosenWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		CallbackData: ShowWhisperData + sepChar + w.UniqueId,
 	})
 
-	_, _ = bot.EditMessageText(w.ParseAsMd().ToString(), &gotgbot.EditMessageTextOpts{
+	_, _ = bot.EditMessageText(w.ParseAsMd(bot).ToString(), &gotgbot.EditMessageTextOpts{
 		ReplyMarkup:     *markup,
 		ParseMode:       "markdownv2",
 		InlineMessageId: ctx.ChosenInlineResult.InlineMessageId,

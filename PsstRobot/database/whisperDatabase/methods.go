@@ -37,17 +37,22 @@ func (w *Whisper) GenerateUniqueID() {
 	w.UniqueId = part1 + "=" + part2
 }
 
-func (w *Whisper) ParseAsMd() mdparser.WMarkDown {
+func (w *Whisper) ParseAsMd(bot *gotgbot.Bot) mdparser.WMarkDown {
 	md := mdparser.GetNormal("A whisper message to ")
-	var rec string
+	var rec mdparser.WMarkDown
 	if w.RecipientUsername != "" {
-		rec = w.RecipientUsername
-	} else {
-		rec = strconv.FormatInt(w.Recipient, 10)
+		rec = mdparser.GetNormal(w.RecipientUsername)
+	} else if w.Recipient != 0 {
+		chat, _ := bot.GetChat(w.Recipient)
+		if chat != nil {
+			rec = mdparser.GetUserMention(chat.FirstName, chat.Id)
+		} else {
+			rec = mdparser.GetMono(strconv.FormatInt(w.Recipient, 10))
+		}
 	}
 
-	if rec != "0" {
-		md.AppendNormalThis(rec)
+	if rec != nil {
+		md.AppendThis(rec)
 		md.AppendNormalThis(".\nOnly they can read the message.")
 	} else {
 		md.AppendNormalThis("anyone.")
