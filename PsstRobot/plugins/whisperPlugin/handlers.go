@@ -114,7 +114,7 @@ func sendWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 			var err error
 			chat, err = bot.GetChat(result.TargetID)
 			if err == nil && chat != nil {
-				title = "🔐 A whisper message to " + chat.Title
+				title = "🔐 A whisper message to " + chat.FirstName
 			}
 		} else if result.Username != "" {
 			title = "🔐 A whisper message to " + result.Username
@@ -132,8 +132,8 @@ func sendWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 
 	results = append(results, &gotgbot.InlineQueryResultArticle{
 		Id:          ctx.InlineQuery.Id,
-		Title:       "Send a whisper message to someone with their username or id",
-		Description: "Only they can open this whisper.",
+		Title:       title,
+		Description: description,
 		InputMessageContent: &gotgbot.InputTextMessageContent{
 			MessageText:           "Generating whisper message...",
 			DisableWebPagePreview: true,
