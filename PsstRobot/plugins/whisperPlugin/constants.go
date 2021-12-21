@@ -6,3 +6,7 @@ const (
 	ShowWhisperData = "wh"
 	sepChar         = "_"
 )
+
+const (
+	MaxQueryLength = 253
+)

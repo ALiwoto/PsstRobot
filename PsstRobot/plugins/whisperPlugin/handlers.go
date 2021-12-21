@@ -98,6 +98,10 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 func sendWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	query := ctx.InlineQuery
 
+	if len(query.Query) > MaxQueryLength {
+		return answerForLongAdvanced(bot, ctx)
+	}
+
 	var results []gotgbot.InlineQueryResult
 	markup := &gotgbot.InlineKeyboardMarkup{}
 	markup.InlineKeyboard = make([][]gotgbot.InlineKeyboardButton, 1)
@@ -155,8 +159,6 @@ func sendWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	// don't let another handlers to be executed
 	return ext.EndGroups
 }
-
-//func(cir *gotgbot.ChosenInlineResult) bool
 
 func sendwhisperFilter(iq *gotgbot.InlineQuery) bool {
 	return true
