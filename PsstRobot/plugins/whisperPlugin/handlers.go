@@ -113,7 +113,7 @@ func sendWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 			var chat *gotgbot.Chat
 			var err error
 			chat, err = bot.GetChat(result.TargetID)
-			if err != nil && chat != nil {
+			if err == nil && chat != nil {
 				title = "🔐 A whisper message to " + chat.Title
 			}
 		} else if result.Username != "" {
