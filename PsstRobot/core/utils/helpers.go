@@ -3,6 +3,8 @@ package utils
 import (
 	"strconv"
 	"strings"
+
+	"github.com/PaulSonOfLars/gotgbot/v2"
 )
 
 func ExtractRecipient(value string) *ExtractedResult {
@@ -46,4 +48,25 @@ func ExtractRecipient(value string) *ExtractedResult {
 	}
 
 	return result
+}
+
+// IsStartedForWhisper util function returns true if the text is
+// for getting whisper text. basically you can use this function
+// to determine if user has started bot to get their whisper text.
+func IsStartedForWhisper(text string) bool {
+	// we are sure that a start command with whisper data is
+	// something like this:
+	// "/start a=b"
+	// so it's basically impossible to consider the text a whisper
+	// with callback data if the length of the text is less than 10.
+	return len(text) > 10 && strings.Contains(text, "=")
+}
+
+func GetWhisperUniqueId(message *gotgbot.Message) string {
+	myStrs := strings.Split(message.Text, " ")
+	if len(myStrs) < 2 {
+		return ""
+	}
+
+	return myStrs[1]
 }

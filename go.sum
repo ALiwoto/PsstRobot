@@ -5,6 +5,8 @@ github.com/ALiwoto/mdparser v1.0.7 h1:tIorE6pZfLTLlmyaHEWa2bG9UpZzGYgTPcSxDshcO8
 github.com/ALiwoto/mdparser v1.0.7/go.mod h1:93EnoGxVukI17RVlKi/yW0UX7mtMaDTHbheZsishw7c=
 github.com/PaulSonOfLars/gotgbot/v2 v2.0.0-rc.3 h1:r3gTHVoTwNMCkr5cjF9y4LafqJhrS+FJYW6xpMT98sE=
 github.com/PaulSonOfLars/gotgbot/v2 v2.0.0-rc.3/go.mod h1:r815fYWTudnU9JhtsJAxUtuV7QrSgKpChJkfTSMFpfg=
+github.com/PaulSonOfLars/gotgbot/v2 v2.0.0-rc.4 h1:1hKv9DvEwn//VsJgcCGt9+IAq4n+PZ38YL+pEhopxhk=
+github.com/PaulSonOfLars/gotgbot/v2 v2.0.0-rc.4/go.mod h1:r815fYWTudnU9JhtsJAxUtuV7QrSgKpChJkfTSMFpfg=
 github.com/benbjohnson/clock v1.1.0 h1:Q92kusRqC1XV2MjkWETPvjJVqKetz1OzxZB7mHJLju8=
 github.com/benbjohnson/clock v1.1.0/go.mod h1:J11/hYXuz8f4ySSvYwY0FKfm+ezbsZBKZxNJlLklBHA=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/ALiwoto/mdparser/mdparser"
+	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/logging"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/utils"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/database/whisperDatabase"
@@ -33,7 +34,7 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		_, _ = query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
 			Text:      "This whisper is too old...",
 			ShowAlert: true,
-			CacheTime: 5,
+			CacheTime: 500,
 		})
 		return ext.EndGroups
 	}
@@ -44,14 +45,18 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 			_, _ = query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
 				Url:       w.GetUrl(bot),
 				ShowAlert: true,
-				CacheTime: 5,
+				CacheTime: 500,
 			})
+			// this part may be unnecessary is most of cases...
+			// but oh well, it's mtproto and bot api we are
+			// talking about, they may change these rules later...
+			w.InlineMessageId = query.InlineMessageId
 			return ext.EndGroups
 		}
 		_, _ = query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
 			Text:      w.Text,
 			ShowAlert: true,
-			CacheTime: 5,
+			CacheTime: 500,
 		})
 		return ext.EndGroups
 	}
@@ -62,7 +67,7 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 			_, _ = query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
 				Url:       w.GetUrl(bot),
 				ShowAlert: true,
-				CacheTime: 5,
+				CacheTime: 500,
 			})
 			return ext.EndGroups
 		}
@@ -71,7 +76,7 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		_, err := query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
 			Text:      w.Text,
 			ShowAlert: true,
-			CacheTime: 5,
+			CacheTime: 500,
 		})
 		if err != nil {
 			logging.Error(err)
@@ -81,7 +86,7 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		md.AppendNormalThis(" read the whisper")
 		_, _ = bot.EditMessageText(md.ToString(), &gotgbot.EditMessageTextOpts{
 			InlineMessageId:       query.InlineMessageId,
-			ParseMode:             "markdownv2",
+			ParseMode:             core.MarkdownV2,
 			DisableWebPagePreview: true,
 		})
 		return ext.EndGroups
@@ -90,7 +95,7 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	_, _ = query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
 		Text:      "This psst is not for you!",
 		ShowAlert: true,
-		CacheTime: 5,
+		CacheTime: 500,
 	})
 	return ext.EndGroups
 }
