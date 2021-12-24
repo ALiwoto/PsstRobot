@@ -99,7 +99,7 @@ func sendWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 
 	var title string
 	var description string
-	if len(query.Query) > 2 && strings.Contains(strings.TrimSpace(query.Query), " ") {
+	if len(query.Query) > 2 {
 		result := utils.ExtractRecipient(query.Query)
 		if !result.IsUsernameValid() {
 			return answerForHelp(bot, ctx)
