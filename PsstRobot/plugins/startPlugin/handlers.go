@@ -27,7 +27,16 @@ func sendWhisperText(bot *gotgbot.Bot, ctx *ext.Context) error {
 	uniqueId := utils.GetWhisperUniqueId(message)
 	w := whisperDatabase.GetWhisper(uniqueId)
 	if w == nil {
-		/* TODO */
+		// TODO:
+		// display original welcome message which is on
+		// normal /start command :0
+		return ext.EndGroups
+	}
+
+	if !w.CanRead(user) {
+		// TODO:
+		// display original welcome message which is on
+		// normal /start command :0
 		return ext.EndGroups
 	}
 
