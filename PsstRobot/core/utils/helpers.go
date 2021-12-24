@@ -4,8 +4,109 @@ import (
 	"strconv"
 	"strings"
 
+	"bytes"
+	"encoding/base64"
+	"encoding/binary"
+	"fmt"
+
 	"github.com/PaulSonOfLars/gotgbot/v2"
 )
+
+// UnpackInlineMessageId returns unpacked inline message id result.
+// all credits goes to https:/github.com/PaulSonOfLars for writing the logic.
+// the original source code is here:
+// https://gist.github.com/PaulSonOfLars/49039e6422f21d5f54d0fe06e18d5143
+func UnpackInlineMessageId(inlineMessageId string) (*UnpackInlineMessageResult, error) {
+	bs, err := base64.RawURLEncoding.DecodeString(inlineMessageId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to base64 decode inline message ID: %w", err)
+	}
+
+	// unsigned 32
+	dcId, err := readULong(bs[0:4])
+	if err != nil {
+		return nil, fmt.Errorf("failed to get DC ID from inline message ID: %w", err)
+	}
+
+	// unsigned 32
+	messageId, err := readULong(bs[4:8])
+	if err != nil {
+		return nil, fmt.Errorf("failed to get message ID from inline message ID: %w", err)
+	}
+
+	// Some odd logic is required to deal with 32/64 bit ids
+	var chatId int64
+	var queryId int64
+	if len(bs) == 20 {
+		// signed 32
+		chatId, err = readLong(bs[8:12])
+		if err != nil {
+			return nil, fmt.Errorf("failed to get 32bit chat ID from inline message ID: %w", err)
+		}
+		// signed 64
+		queryId, err = readLongLong(bs[12:20])
+		if err != nil {
+			return nil, fmt.Errorf("failed to get query ID from inline message ID: %w", err)
+		}
+	} else {
+		// signed 64
+		chatId, err = readLongLong(bs[8:16])
+		if err != nil {
+			return nil, fmt.Errorf("failed to get 64bit chat ID from inline message ID: %w", err)
+		}
+		// signed 64
+		queryId, err = readLongLong(bs[16:24])
+		if err != nil {
+			return nil, fmt.Errorf("failed to get query ID from inline message ID: %w", err)
+		}
+	}
+
+	if chatId < 0 {
+		fullChatId := "-100" + strconv.FormatInt(-chatId, 10)
+		chatId, err = strconv.ParseInt(fullChatId, 10, 64)
+		if err != nil {
+			return nil, fmt.Errorf("failed to fix chat ID to bot API: %w", err)
+		}
+	}
+
+	return &UnpackInlineMessageResult{
+		InlineMessageId: inlineMessageId,
+		DC:              dcId,
+		MessageID:       messageId,
+		ChatID:          chatId,
+		QueryID:         queryId,
+	}, nil
+}
+
+func readULong(b []byte) (int64, error) {
+	buf := bytes.NewBuffer(b)
+	var x uint32
+	err := binary.Read(buf, binary.LittleEndian, &x)
+	if err != nil {
+		return 0, err
+	}
+	return int64(x), nil
+}
+
+func readLong(b []byte) (int64, error) {
+	buf := bytes.NewBuffer(b)
+	var x int32
+	err := binary.Read(buf, binary.LittleEndian, &x)
+	if err != nil {
+		return 0, err
+	}
+	return int64(x), nil
+}
+
+func readLongLong(b []byte) (int64, error) {
+	buf := bytes.NewBuffer(b)
+	var x int64
+	err := binary.Read(buf, binary.LittleEndian, &x)
+	if err != nil {
+		return 0, err
+	}
+	return x, nil
+}
 
 func ExtractRecipient(value string) *ExtractedResult {
 	if len(value) == 0 {
@@ -46,6 +147,8 @@ func ExtractRecipient(value string) *ExtractedResult {
 		result.Text = strings.TrimSuffix(value, myStrs[last])
 		return result
 	}
+
+	result.Text = value
 
 	return result
 }

@@ -76,6 +76,10 @@ func (w *Whisper) CanRead(u *gotgbot.User) bool {
 		return false
 	}
 
+	if u.Id == w.Sender {
+		return true
+	}
+
 	// everyone?
 	if w.Recipient == 0 {
 		if w.RecipientUsername == "" {
@@ -92,8 +96,26 @@ func (w *Whisper) CanRead(u *gotgbot.User) bool {
 	return false
 }
 
+func (w *Whisper) ShouldMarkAsRead(u *gotgbot.User) bool {
+	return u.Id != w.Sender
+}
+
 func (w *Whisper) setText(value string) {
 	w.Text = strings.TrimSpace(value)
+}
+
+func (w *Whisper) Unpack() (*utils.UnpackInlineMessageResult, error) {
+	if w.unpackedResult != nil {
+		return w.unpackedResult, nil
+	}
+
+	r, err := utils.UnpackInlineMessageId(w.InlineMessageId)
+	if err != nil {
+		return nil, err
+	}
+	w.unpackedResult = r
+
+	return r, nil
 }
 
 func (w *Whisper) ParseRecipient() {

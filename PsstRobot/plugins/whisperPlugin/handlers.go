@@ -39,28 +39,6 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		return ext.EndGroups
 	}
 
-	if w.Sender == user.Id {
-		if w.IsTooLong() {
-			// redirect user to bot's pm
-			_, _ = query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
-				Url:       w.GetUrl(bot),
-				ShowAlert: true,
-				CacheTime: 500,
-			})
-			// this part may be unnecessary is most of cases...
-			// but oh well, it's mtproto and bot api we are
-			// talking about, they may change these rules later...
-			w.InlineMessageId = query.InlineMessageId
-			return ext.EndGroups
-		}
-		_, _ = query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
-			Text:      w.Text,
-			ShowAlert: true,
-			CacheTime: 500,
-		})
-		return ext.EndGroups
-	}
-
 	if w.CanRead(user) {
 		if w.IsTooLong() {
 			// redirect user to bot's pm
@@ -72,7 +50,6 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 			return ext.EndGroups
 		}
 
-		go whisperDatabase.RemoveWhisper(w)
 		_, err := query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
 			Text:      w.Text,
 			ShowAlert: true,
@@ -80,15 +57,20 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		})
 		if err != nil {
 			logging.Error(err)
+			return ext.EndGroups
 		}
 
-		md := mdparser.GetUserMention(user.FirstName, user.Id)
-		md.AppendNormalThis(" read the whisper")
-		_, _ = bot.EditMessageText(md.ToString(), &gotgbot.EditMessageTextOpts{
-			InlineMessageId:       query.InlineMessageId,
-			ParseMode:             core.MarkdownV2,
-			DisableWebPagePreview: true,
-		})
+		if w.ShouldMarkAsRead(user) {
+			go whisperDatabase.RemoveWhisper(w)
+			md := mdparser.GetUserMention(user.FirstName, user.Id)
+			md.AppendNormalThis(" read the whisper")
+			_, _ = bot.EditMessageText(md.ToString(), &gotgbot.EditMessageTextOpts{
+				InlineMessageId:       query.InlineMessageId,
+				ParseMode:             core.MarkdownV2,
+				DisableWebPagePreview: true,
+			})
+		}
+
 		return ext.EndGroups
 	}
 
@@ -179,7 +161,8 @@ func chosenWhisperFilter(cir *gotgbot.ChosenInlineResult) bool {
 }
 
 func chosenWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
-	w := whisperDatabase.CreateNewWhisper(ctx.ChosenInlineResult)
+	result := ctx.ChosenInlineResult
+	w := whisperDatabase.CreateNewWhisper(result)
 	markup := &gotgbot.InlineKeyboardMarkup{}
 	markup.InlineKeyboard = make([][]gotgbot.InlineKeyboardButton, 1)
 	markup.InlineKeyboard[0] = append(markup.InlineKeyboard[0], gotgbot.InlineKeyboardButton{
@@ -190,7 +173,7 @@ func chosenWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	_, _ = bot.EditMessageText(w.ParseAsMd(bot).ToString(), &gotgbot.EditMessageTextOpts{
 		ReplyMarkup:     *markup,
 		ParseMode:       "markdownv2",
-		InlineMessageId: ctx.ChosenInlineResult.InlineMessageId,
+		InlineMessageId: result.InlineMessageId,
 	})
 
 	// don't let another handlers to be executed
