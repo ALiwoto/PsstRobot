@@ -12,6 +12,30 @@ import (
 	"github.com/PaulSonOfLars/gotgbot/v2"
 )
 
+func GetName(user *gotgbot.User) string {
+	if user.FirstName != "" {
+		return FixName(user.FirstName)
+	}
+
+	if user.LastName != "" {
+		return FixName(user.LastName)
+	}
+
+	if user.Username != "" {
+		return FixName(user.Username)
+	}
+
+	return ""
+}
+
+func FixName(name string) string {
+	if len(name) > 20 {
+		return name[:20]
+	}
+
+	return name
+}
+
 func GetDBIndex(id int64) int {
 	return int(strconv.FormatInt(id, 10)[0] - '0')
 }

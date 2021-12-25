@@ -205,11 +205,9 @@ func chosenWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		CallbackData: ShowWhisperData + sepChar + w.UniqueId,
 	})
 
-	utils.UnpackInlineMessageId(result.InlineMessageId)
-
 	_, _ = bot.EditMessageText(w.ParseAsMd(bot).ToString(), &gotgbot.EditMessageTextOpts{
 		ReplyMarkup:     *markup,
-		ParseMode:       "markdownv2",
+		ParseMode:       core.MarkdownV2,
 		InlineMessageId: result.InlineMessageId,
 	})
 

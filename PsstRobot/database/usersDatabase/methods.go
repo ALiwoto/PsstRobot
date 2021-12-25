@@ -1,6 +1,7 @@
 package usersDatabase
 
 import (
+	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/utils"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/wotoValues"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 )
@@ -60,7 +61,7 @@ func (c *HistoryCollection) AddUser(user *gotgbot.User) *UserHistory {
 	h := &UserHistory{
 		TargetId:   user.Id,
 		OwnerId:    c.OwnerId,
-		TargetName: user.FirstName,
+		TargetName: utils.GetName(user),
 	}
 
 	c.History = append(c.History, *h)
