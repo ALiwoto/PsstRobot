@@ -2,11 +2,13 @@ package whisperPlugin
 
 import (
 	"strings"
+	"time"
 
 	"github.com/ALiwoto/mdparser/mdparser"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/logging"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/utils"
+	wv "github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/wotoValues"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/database/usersDatabase"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/database/whisperDatabase"
 	"github.com/PaulSonOfLars/gotgbot/v2"
@@ -158,13 +160,24 @@ func sendWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	if isAnyone {
 		history := usersDatabase.GetUserHistory(user.Id)
 		if history != nil && !history.IsEmpty() {
-			results = append(results, &gotgbot.InlineQueryResultArticle{
-				Id:                  "This is a test::1234567812",
-				Title:               title,
-				Description:         description,
-				InputMessageContent: generatingInputMessageContent,
-				ReplyMarkup:         markup,
-			})
+			timeStampNow := utils.ToBase32(time.Now().Unix())
+			var resultId string
+			for _, current := range history.History {
+				// time::user::target
+				resultId = timeStampNow
+				resultId += wv.ResultIdentifier + utils.ToBase32(current.OwnerId)
+				resultId += wv.ResultIdentifier + utils.ToBase32(current.TargetId)
+				title = "📩 A whisper message to " + current.TargetName
+				description = "Only " + current.TargetName + " can open this whisper."
+				results = append(results, &gotgbot.InlineQueryResultArticle{
+					Id:                  resultId,
+					Title:               title,
+					Description:         description,
+					InputMessageContent: generatingInputMessageContent,
+					ReplyMarkup:         markup,
+				})
+			}
+
 		}
 	}
 
@@ -192,6 +205,8 @@ func chosenWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		CallbackData: ShowWhisperData + sepChar + w.UniqueId,
 	})
 
+	utils.UnpackInlineMessageId(result.InlineMessageId)
+
 	_, _ = bot.EditMessageText(w.ParseAsMd(bot).ToString(), &gotgbot.EditMessageTextOpts{
 		ReplyMarkup:     *markup,
 		ParseMode:       "markdownv2",
@@ -205,7 +220,6 @@ func chosenWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 //---------------------------------------------------------
 
 func generatorListenerFilter(msg *gotgbot.Message) bool {
-
 	return false
 }
 

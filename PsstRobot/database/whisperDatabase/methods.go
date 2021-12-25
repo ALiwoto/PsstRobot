@@ -8,6 +8,7 @@ import (
 
 	"github.com/ALiwoto/mdparser/mdparser"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/utils"
+	wv "github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/wotoValues"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 )
 
@@ -260,7 +261,23 @@ func (w *Whisper) Unpack() (*utils.UnpackInlineMessageResult, error) {
 	return r, nil
 }
 
-func (w *Whisper) ParseRecipient() {
+func (w *Whisper) parseRecipientByResultId(myStrs []string, chosen *gotgbot.ChosenInlineResult) {
+	// format:
+	// time::user::target
+
+	w.Recipient, _ = strconv.ParseInt(myStrs[2], 10, 64)
+	w.setText(chosen.Query)
+}
+
+func (w *Whisper) ParseRecipient(chosen *gotgbot.ChosenInlineResult) {
+	if strings.Contains(chosen.ResultId, wv.ResultIdentifier) {
+		myStrs := strings.Split(chosen.ResultId, wv.ResultIdentifier)
+		if len(myStrs) == 3 {
+			w.parseRecipientByResultId(myStrs, chosen)
+			return
+		}
+	}
+
 	r := utils.ExtractRecipient(w.Text)
 	if r == nil {
 		return

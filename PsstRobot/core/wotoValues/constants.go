@@ -8,6 +8,7 @@ const (
 )
 
 const (
-	HelpDataInline  = "help-inline"
-	StartDataCreate = "create"
+	ResultIdentifier = "::"
+	HelpDataInline   = "help-inline"
+	StartDataCreate  = "create"
 )

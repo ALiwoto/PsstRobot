@@ -72,5 +72,8 @@ func getUserHistoryFromDatabase(userId int64) *HistoryCollection {
 	session.Model(ModelUserHistory).Where("owner_id = ?", userId).Find(&history)
 	mutex.Unlock()
 
-	return nil
+	return &HistoryCollection{
+		History: history,
+		OwnerId: userId,
+	}
 }
