@@ -166,7 +166,7 @@ func sendWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 				// time::user::target
 				resultId = timeStampNow
 				resultId += wv.ResultIdentifier + utils.ToBase32(current.OwnerId)
-				resultId += wv.ResultIdentifier + utils.ToBase32(current.TargetId)
+				resultId += wv.ResultIdentifier + utils.ToBase10(current.TargetId)
 				title = "📩 A whisper message to " + current.TargetName
 				description = "Only " + current.TargetName + " can open this whisper."
 				results = append(results, &gotgbot.InlineQueryResultArticle{
