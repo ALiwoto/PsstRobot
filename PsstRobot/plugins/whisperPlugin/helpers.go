@@ -27,8 +27,10 @@ func LoadHandlers(d *ext.Dispatcher, t []rune) {
 	sendWhisperIq := handlers.NewInlineQuery(sendwhisperFilter, sendWhisperResponse)
 	chosenWhisperIq := handlers.NewChosenInlineResult(chosenWhisperFilter, chosenWhisperResponse)
 	showWishperCb := handlers.NewCallback(showWhisperCallBackQuery, showWhisperResponse)
+	whisperGeneratorListener := handlers.NewMessage(generatorListenerFilter, generatorListenerHandler)
 
 	d.AddHandler(chosenWhisperIq)
 	d.AddHandler(sendWhisperIq)
 	d.AddHandler(showWishperCb)
+	d.AddHandler(whisperGeneratorListener)
 }

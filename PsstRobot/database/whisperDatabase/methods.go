@@ -23,7 +23,7 @@ func (w *Whisper) IsExpired(d time.Duration) bool {
 }
 
 func (w *Whisper) GetDBIndex() int {
-	return int(strconv.FormatInt(w.Sender, 10)[0] - '0')
+	return utils.GetDBIndex(w.Sender)
 }
 
 func (w *Whisper) GenerateUniqueID() {
@@ -71,6 +71,150 @@ func (w *Whisper) GetUrl(b *gotgbot.Bot) string {
 	return "http://t.me/" + b.Username + "?start=" + url.QueryEscape(w.UniqueId)
 }
 
+func (w *Whisper) ShouldRedirect() bool {
+	return w.Type != WhisperTypePlainText || w.IsTooLong()
+}
+
+func (w *Whisper) IsMediaGroup() bool {
+	return strings.Contains(w.FileId, MediaGroupSep)
+}
+
+func (w *Whisper) GetMediaGroup() []gotgbot.InputMedia {
+	// - InputMediaAnimation
+	// - InputMediaDocument
+	// - InputMediaAudio
+	// - InputMediaPhoto
+	// - InputMediaVideo
+	switch w.Type {
+	case WhisperTypeAnimation:
+		return w.getAnimationArray()
+	case WhisperTypeDocument:
+		return w.getDocumentArray()
+	case WhisperTypeAudio:
+		return w.getAudioArray()
+	case WhisperTypePhoto:
+		return w.getPhotoArray()
+	case WhisperTypeVideo:
+		return w.getVideoArray()
+	}
+
+	/* not a media */
+	return nil
+}
+
+func (w *Whisper) getFileIDs() []string {
+	return strings.Split(w.FileId, MediaGroupSep)
+}
+
+func (w *Whisper) getCaptions() []string {
+	return strings.Split(w.Text, CaptionSep)
+}
+
+// getAnimationArray returns an array of InputMediaDocument in form of
+// []gotgbot.InputMedia
+func (w *Whisper) getDocumentArray() []gotgbot.InputMedia {
+	// - InputMediaAnimation
+	// - InputMediaDocument
+	// - InputMediaAudio
+	// - InputMediaPhoto
+	// - InputMediaVideo
+	var myArray []gotgbot.InputMedia
+	files := w.getFileIDs()
+	captions := w.getCaptions()
+	for i, current := range files {
+		myArray = append(myArray, gotgbot.InputMediaDocument{
+			Media:   current,
+			Caption: captions[i],
+		})
+	}
+
+	return myArray
+}
+
+// getAnimationArray returns an array of InputMediaAudio in form of
+// []gotgbot.InputMedia
+func (w *Whisper) getAudioArray() []gotgbot.InputMedia {
+	// - InputMediaAnimation
+	// - InputMediaDocument
+	// - InputMediaAudio
+	// - InputMediaPhoto
+	// - InputMediaVideo
+	var myArray []gotgbot.InputMedia
+	files := w.getFileIDs()
+	captions := w.getCaptions()
+	for i, current := range files {
+		myArray = append(myArray, gotgbot.InputMediaAudio{
+			Media:   current,
+			Caption: captions[i],
+		})
+	}
+
+	return myArray
+}
+
+// getAnimationArray returns an array of InputMediaVideo in form of
+// []gotgbot.InputMedia
+func (w *Whisper) getVideoArray() []gotgbot.InputMedia {
+	// - InputMediaAnimation
+	// - InputMediaDocument
+	// - InputMediaAudio
+	// - InputMediaPhoto
+	// - InputMediaVideo
+	var myArray []gotgbot.InputMedia
+	files := w.getFileIDs()
+	captions := w.getCaptions()
+	for i, current := range files {
+		myArray = append(myArray, gotgbot.InputMediaVideo{
+			Media:   current,
+			Caption: captions[i],
+		})
+	}
+
+	return myArray
+}
+
+// getAnimationArray returns an array of InputMediaPhoto in form of
+// []gotgbot.InputMedia
+func (w *Whisper) getPhotoArray() []gotgbot.InputMedia {
+	// - InputMediaAnimation
+	// - InputMediaDocument
+	// - InputMediaAudio
+	// - InputMediaPhoto
+	// - InputMediaVideo
+	var myArray []gotgbot.InputMedia
+	files := w.getFileIDs()
+	captions := w.getCaptions()
+	for i, current := range files {
+		myArray = append(myArray, gotgbot.InputMediaPhoto{
+			Media:   current,
+			Caption: captions[i],
+		})
+	}
+
+	return myArray
+}
+
+// getAnimationArray returns an array of InputMediaAnimation in form of
+// []gotgbot.InputMedia
+func (w *Whisper) getAnimationArray() []gotgbot.InputMedia {
+	// - InputMediaAnimation
+	// - InputMediaDocument
+	// - InputMediaAudio
+	// - InputMediaPhoto
+	// - InputMediaVideo
+	var myArray []gotgbot.InputMedia
+	files := w.getFileIDs()
+	captions := w.getCaptions()
+	for i, current := range files {
+		myArray = append(myArray, gotgbot.InputMediaAnimation{
+			Media:   current,
+			Caption: captions[i],
+		})
+	}
+
+	return myArray
+}
+
 func (w *Whisper) CanRead(u *gotgbot.User) bool {
 	if u == nil {
 		return false
@@ -86,9 +230,7 @@ func (w *Whisper) CanRead(u *gotgbot.User) bool {
 			return true
 		}
 
-		if w.canMatchUsername(u.Username) {
-			return true
-		}
+		return w.canMatchUsername(u.Username)
 	} else if u.Id == w.Recipient {
 		return true
 	}

@@ -12,6 +12,8 @@ import (
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
 )
 
+//---------------------------------------------------------
+
 func showWhisperCallBackQuery(cq *gotgbot.CallbackQuery) bool {
 	return strings.HasPrefix(cq.Data, ShowWhisperData+sepChar)
 }
@@ -40,7 +42,7 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	}
 
 	if w.CanRead(user) {
-		if w.IsTooLong() {
+		if w.ShouldRedirect() {
 			// redirect user to bot's pm
 			_, _ = query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
 				Url:       w.GetUrl(bot),
@@ -80,6 +82,12 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		CacheTime: 500,
 	})
 	return ext.EndGroups
+}
+
+//---------------------------------------------------------
+
+func sendwhisperFilter(iq *gotgbot.InlineQuery) bool {
+	return true
 }
 
 func sendWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
@@ -152,9 +160,7 @@ func sendWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	return ext.EndGroups
 }
 
-func sendwhisperFilter(iq *gotgbot.InlineQuery) bool {
-	return true
-}
+//---------------------------------------------------------
 
 func chosenWhisperFilter(cir *gotgbot.ChosenInlineResult) bool {
 	return true
@@ -179,3 +185,17 @@ func chosenWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	// don't let another handlers to be executed
 	return ext.EndGroups
 }
+
+//---------------------------------------------------------
+
+func generatorListenerFilter(msg *gotgbot.Message) bool {
+
+	return false
+}
+
+func generatorListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
+
+	return ext.ContinueGroups
+}
+
+//---------------------------------------------------------

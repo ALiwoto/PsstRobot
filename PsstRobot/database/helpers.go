@@ -7,6 +7,7 @@ import (
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/logging"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/wotoConfig"
 	wv "github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/wotoValues"
+	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/database/usersDatabase"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/database/whisperDatabase"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -49,6 +50,7 @@ func StartDB() error {
 	//Create tables if they don't exist
 	err = wv.Core.AutoMigrateDB(
 		whisperDatabase.ModelWhisper,
+		usersDatabase.ModelUserHistory,
 	)
 	if err != nil {
 		return err

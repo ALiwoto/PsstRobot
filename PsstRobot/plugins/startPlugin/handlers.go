@@ -70,6 +70,8 @@ func sendWhisperText(bot *gotgbot.Bot, ctx *ext.Context) error {
 		AllowSendingWithoutReply: true,
 	})
 
+	bot.SendSticker(0, "", &gotgbot.SendStickerOpts{})
+
 	if w.InlineMessageId != "" && w.Sender != user.Id {
 		go whisperDatabase.RemoveWhisper(w)
 
