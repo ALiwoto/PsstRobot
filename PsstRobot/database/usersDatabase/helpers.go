@@ -6,24 +6,36 @@ import (
 	"github.com/PaulSonOfLars/gotgbot/v2"
 )
 
-func GetUserHistory(userId int64) *HistoryCollection {
-	h := theManager.GetUserHistory(userId)
-	if h != nil {
-		return h
+func GetUserHistory(ownerId int64) *HistoryCollection {
+	collection := theManager.GetUserHistory(ownerId)
+	if collection != nil {
+		if collection.IsEmpty() {
+			return nil
+		}
+
+		return collection
 	}
 
-	h = getUserHistoryFromDatabase(userId)
-	if h == nil {
+	collection = getUserHistoryFromDatabase(ownerId)
+	if collection == nil {
+		theManager.CreateCollection(ownerId)
 		// not found in database
+		return nil
+	} else if collection.IsEmpty() {
 		return nil
 	}
 
-	theManager.SetUserHistory(userId, h)
+	theManager.SetUserHistory(ownerId, collection)
 
-	return h
+	return collection
 }
 
 func SaveInHistory(ownerId int64, target *gotgbot.User) {
+	if ownerId == target.Id {
+		// don't save user itself in the history...
+		return
+	}
+
 	collection := theManager.GetUserHistory(ownerId)
 	if collection != nil {
 		if collection.Exists(target.Id) {
@@ -35,7 +47,9 @@ func SaveInHistory(ownerId int64, target *gotgbot.User) {
 		collection = theManager.CreateCollection(ownerId)
 	}
 
-	h := collection.AddUser(target)
+	// at this point, we are sure that collection is not nil
+	// and that it doesn't contain the target user's history
+	history := collection.AddUser(target)
 
 	index := utils.GetDBIndex(ownerId)
 	session := wv.Core.SessionCollection.GetSession(index)
@@ -43,7 +57,7 @@ func SaveInHistory(ownerId int64, target *gotgbot.User) {
 
 	mutex.Lock()
 	tx := session.Begin()
-	tx.Create(h)
+	tx.Create(history)
 	tx.Commit()
 	mutex.Unlock()
 }

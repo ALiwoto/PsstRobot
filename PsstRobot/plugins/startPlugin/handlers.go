@@ -6,6 +6,7 @@ import (
 	"github.com/ALiwoto/mdparser/mdparser"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/utils"
+	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/database/usersDatabase"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/database/whisperDatabase"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
@@ -70,11 +71,9 @@ func sendWhisperText(bot *gotgbot.Bot, ctx *ext.Context) error {
 		AllowSendingWithoutReply: true,
 	})
 
-	bot.SendSticker(0, "", &gotgbot.SendStickerOpts{})
+	//bot.SendSticker(0, "", &gotgbot.SendStickerOpts{})
 
-	if w.InlineMessageId != "" && w.Sender != user.Id {
-		go whisperDatabase.RemoveWhisper(w)
-
+	if w.ShouldMarkAsRead(user) {
 		md := mdparser.GetUserMention(user.FirstName, user.Id)
 		md.AppendNormalThis(" read the whisper")
 		_, _ = bot.EditMessageText(md.ToString(), &gotgbot.EditMessageTextOpts{
@@ -82,6 +81,9 @@ func sendWhisperText(bot *gotgbot.Bot, ctx *ext.Context) error {
 			ParseMode:             core.MarkdownV2,
 			DisableWebPagePreview: true,
 		})
+
+		whisperDatabase.RemoveWhisper(w)
+		usersDatabase.SaveInHistory(w.Sender, user)
 	}
 	return ext.EndGroups
 }

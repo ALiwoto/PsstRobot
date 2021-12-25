@@ -35,6 +35,10 @@ func (m *historyManager) SetUserHistory(ownerId int64, h *HistoryCollection) {
 //---------------------------------------------------------
 
 func (c *HistoryCollection) Exists(targetId int64) bool {
+	if c.IsEmpty() {
+		return false
+	}
+
 	for _, h := range c.History {
 		if h.TargetId == targetId {
 			return true
@@ -42,6 +46,10 @@ func (c *HistoryCollection) Exists(targetId int64) bool {
 	}
 
 	return false
+}
+
+func (c *HistoryCollection) IsEmpty() bool {
+	return len(c.History) == 0
 }
 
 func (c *HistoryCollection) AddUser(user *gotgbot.User) *UserHistory {

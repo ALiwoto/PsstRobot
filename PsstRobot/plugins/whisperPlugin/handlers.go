@@ -7,6 +7,7 @@ import (
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/logging"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/utils"
+	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/database/usersDatabase"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/database/whisperDatabase"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
@@ -63,7 +64,6 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		}
 
 		if w.ShouldMarkAsRead(user) {
-			go whisperDatabase.RemoveWhisper(w)
 			md := mdparser.GetUserMention(user.FirstName, user.Id)
 			md.AppendNormalThis(" read the whisper")
 			_, _ = bot.EditMessageText(md.ToString(), &gotgbot.EditMessageTextOpts{
@@ -71,6 +71,9 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 				ParseMode:             core.MarkdownV2,
 				DisableWebPagePreview: true,
 			})
+
+			whisperDatabase.RemoveWhisper(w)
+			usersDatabase.SaveInHistory(w.Sender, user)
 		}
 
 		return ext.EndGroups
@@ -92,12 +95,14 @@ func sendwhisperFilter(iq *gotgbot.InlineQuery) bool {
 
 func sendWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	query := ctx.InlineQuery
+	user := ctx.EffectiveUser
 
 	if len(query.Query) > MaxQueryLength {
 		return answerForLongAdvanced(bot, ctx)
 	}
 
 	var results []gotgbot.InlineQueryResult
+	var isAnyone bool
 	markup := &gotgbot.InlineKeyboardMarkup{}
 	markup.InlineKeyboard = make([][]gotgbot.InlineKeyboardButton, 1)
 	markup.InlineKeyboard[0] = append(markup.InlineKeyboard[0], gotgbot.InlineKeyboardButton{
@@ -114,6 +119,7 @@ func sendWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		}
 
 		if result.IsForEveryone() {
+			isAnyone = true
 			title = "📖 A whisper message to anyone!"
 			description = "Everyone will be able to open this whisper."
 		} else if result.TargetID > 0 {
@@ -142,15 +148,25 @@ func sendWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	}
 
 	results = append(results, &gotgbot.InlineQueryResultArticle{
-		Id:          ctx.InlineQuery.Id,
-		Title:       title,
-		Description: description,
-		InputMessageContent: &gotgbot.InputTextMessageContent{
-			MessageText:           "Generating whisper message...",
-			DisableWebPagePreview: true,
-		},
-		ReplyMarkup: markup,
+		Id:                  ctx.InlineQuery.Id,
+		Title:               title,
+		Description:         description,
+		InputMessageContent: generatingInputMessageContent,
+		ReplyMarkup:         markup,
 	})
+
+	if isAnyone {
+		history := usersDatabase.GetUserHistory(user.Id)
+		if history != nil && !history.IsEmpty() {
+			results = append(results, &gotgbot.InlineQueryResultArticle{
+				Id:                  "This is a test::1234567812",
+				Title:               title,
+				Description:         description,
+				InputMessageContent: generatingInputMessageContent,
+				ReplyMarkup:         markup,
+			})
+		}
+	}
 
 	_, _ = query.Answer(bot, results, &gotgbot.AnswerInlineQueryOpts{
 		IsPersonal: true,
