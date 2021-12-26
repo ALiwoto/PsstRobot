@@ -1,6 +1,8 @@
 package usersDatabase
 
 import (
+	"time"
+
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/utils"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/wotoValues"
 	"github.com/PaulSonOfLars/gotgbot/v2"
@@ -17,7 +19,8 @@ func (m *historyManager) GetUserHistory(ownerId int64) *HistoryCollection {
 
 func (m *historyManager) CreateCollection(ownerId int64) *HistoryCollection {
 	h := &HistoryCollection{
-		OwnerId: ownerId,
+		OwnerId:    ownerId,
+		cachedTime: time.Now(),
 	}
 
 	m.historyMutex.Lock()
@@ -30,6 +33,18 @@ func (m *historyManager) CreateCollection(ownerId int64) *HistoryCollection {
 func (m *historyManager) SetUserHistory(ownerId int64, h *HistoryCollection) {
 	m.historyMutex.Lock()
 	m.historyMap[ownerId] = h
+	m.historyMutex.Unlock()
+}
+
+func (m *historyManager) cleanUp(expiry time.Duration) {
+	m.historyMutex.Lock()
+
+	for k, v := range m.historyMap {
+		if v == nil || v.IsExpired(expiry) {
+			delete(m.historyMap, k)
+		}
+	}
+
 	m.historyMutex.Unlock()
 }
 
@@ -68,3 +83,27 @@ func (c *HistoryCollection) AddUser(user *gotgbot.User) *UserHistory {
 
 	return h
 }
+
+func (c *HistoryCollection) IsExpired(expiry time.Duration) bool {
+	return time.Since(c.cachedTime) > expiry
+}
+
+//---------------------------------------------------------
+
+func (u *UserData) IsExpired(expiry time.Duration) bool {
+	return time.Since(u.cachedTime) > expiry
+}
+
+func (u *UserData) IsBanned() bool {
+	return u.Status == UserStatusBanned
+}
+
+func (u *UserData) IsSendingData() bool {
+	return u.Status == UserStatusCreating
+}
+
+func (u *UserData) IsChoosingTitle() bool {
+	return u.Status == UserStatusChoosingTitle
+}
+
+//---------------------------------------------------------

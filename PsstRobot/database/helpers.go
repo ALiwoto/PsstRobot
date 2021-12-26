@@ -59,6 +59,7 @@ func StartDB() error {
 	logging.Info("Auto-migrated database schema")
 
 	whisperDatabase.LoadAllWhispers()
+	usersDatabase.LoadUsersDatabase()
 
 	return nil
 }

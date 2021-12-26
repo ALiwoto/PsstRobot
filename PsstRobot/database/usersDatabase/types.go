@@ -1,6 +1,9 @@
 package usersDatabase
 
-import "sync"
+import (
+	"sync"
+	"time"
+)
 
 type UserStatus int
 
@@ -10,8 +13,9 @@ type historyManager struct {
 }
 
 type HistoryCollection struct {
-	History []UserHistory
-	OwnerId int64
+	History    []UserHistory
+	OwnerId    int64
+	cachedTime time.Time
 }
 
 type UserHistory struct {
@@ -21,6 +25,7 @@ type UserHistory struct {
 }
 
 type UserData struct {
-	UserId int64      `json:"user_id" gorm:"primaryKey"`
-	Status UserStatus `json:"status"`
+	UserId     int64      `json:"user_id" gorm:"primaryKey"`
+	Status     UserStatus `json:"status"`
+	cachedTime time.Time  `json:"-" gorm:"-" sql:"-"`
 }
