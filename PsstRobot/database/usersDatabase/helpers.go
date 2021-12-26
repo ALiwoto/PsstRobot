@@ -98,13 +98,18 @@ func SaveInHistory(ownerId int64, target *gotgbot.User) {
 
 	// at this point, we are sure that collection is not nil
 	// and that it doesn't contain the target user's history
-	history := collection.AddUser(target)
+	history, removed := collection.AddUser(target)
 
 	index := utils.GetDBIndex(ownerId)
 	session := wv.Core.SessionCollection.GetSession(index)
 	mutex := wv.Core.SessionCollection.GetMutex(index)
 
 	mutex.Lock()
+	if removed != nil {
+		session.Model(ModelUserHistory).Delete(
+			"owner_id = ? AND target_id = ?", ownerId, removed.TargetId,
+		)
+	}
 	tx := session.Begin()
 	tx.Create(history)
 	tx.Commit()

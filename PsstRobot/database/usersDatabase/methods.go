@@ -68,8 +68,9 @@ func (c *HistoryCollection) IsEmpty() bool {
 	return len(c.History) == 0
 }
 
-func (c *HistoryCollection) AddUser(user *gotgbot.User) *UserHistory {
+func (c *HistoryCollection) AddUser(user *gotgbot.User) (new, removed *UserHistory) {
 	if len(c.History) > wotoValues.MaximumHistory {
+		removed = &c.History[0]
 		c.History = c.History[1:]
 	}
 
@@ -81,7 +82,9 @@ func (c *HistoryCollection) AddUser(user *gotgbot.User) *UserHistory {
 
 	c.History = append(c.History, *h)
 
-	return h
+	new = h
+
+	return
 }
 
 func (c *HistoryCollection) IsExpired(expiry time.Duration) bool {
