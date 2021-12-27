@@ -46,7 +46,8 @@ func privacyHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 			md = mdparser.GetNormal("Privacy mode has been " + preString() + " successfully.")
 		}
 	} else {
-		md = mdparser.GetNormal("Usage:\n  /privacy [on|off]")
+		md = mdparser.GetBold("· Usage:")
+		md.AppendNormalThis("\n    /privacy [on|off]")
 	}
 
 	_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
