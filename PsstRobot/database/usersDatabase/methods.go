@@ -68,13 +68,24 @@ func (c *HistoryCollection) IsEmpty() bool {
 	return len(c.History) == 0
 }
 
-func (c *HistoryCollection) AddUser(user *gotgbot.User) (new, removed *UserHistory) {
+func (c *HistoryCollection) HasTooMuch() bool {
+	return len(c.History) > wotoValues.MaximumHistory
+}
+
+func (c *HistoryCollection) FixLength() (removed []UserHistoryValue) {
+	counter := len(c.History) - wotoValues.MaximumHistory
+	c.History = c.History[counter:]
+	return c.History[:counter]
+}
+
+func (c *HistoryCollection) AddUser(user *gotgbot.User) (new, removed *UserHistoryValue) {
 	if len(c.History) > wotoValues.MaximumHistory {
 		removed = &c.History[0]
 		c.History = c.History[1:]
 	}
 
-	h := &UserHistory{
+	h := &UserHistoryValue{
+		UniqueId:   uIdForUserHistory(c.OwnerId, user.Id),
 		TargetId:   user.Id,
 		OwnerId:    c.OwnerId,
 		TargetName: utils.GetName(user),

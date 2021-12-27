@@ -4,7 +4,7 @@ import "sync"
 
 // database models
 var (
-	ModelUserHistory = &UserHistory{}
+	ModelUserHistory = &UserHistoryValue{}
 	ModelUserData    = &UserData{}
 )
 

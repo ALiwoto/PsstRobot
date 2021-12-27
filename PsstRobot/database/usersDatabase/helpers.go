@@ -88,6 +88,20 @@ func SaveInHistory(ownerId int64, target *gotgbot.User) {
 	collection := theManager.GetUserHistory(ownerId)
 	if collection != nil {
 		if collection.Exists(target.Id) {
+			if collection.HasTooMuch() {
+				removed := collection.FixLength()
+				if len(removed) < 1 {
+					return
+				}
+
+				index := utils.GetDBIndex(ownerId)
+				session := wv.Core.SessionCollection.GetSession(index)
+				mutex := wv.Core.SessionCollection.GetMutex(index)
+
+				mutex.Lock()
+				session.Delete(removed)
+				mutex.Unlock()
+			}
 			return
 		}
 	} else {
@@ -105,12 +119,10 @@ func SaveInHistory(ownerId int64, target *gotgbot.User) {
 	mutex := wv.Core.SessionCollection.GetMutex(index)
 
 	mutex.Lock()
-	if removed != nil {
-		session.Model(ModelUserHistory).Delete(
-			"owner_id = ? AND target_id = ?", ownerId, removed.TargetId,
-		)
-	}
 	tx := session.Begin()
+	if removed != nil {
+		tx.Delete(removed)
+	}
 	tx.Create(history)
 	tx.Commit()
 	mutex.Unlock()
@@ -120,7 +132,7 @@ func getUserHistoryFromDatabase(userId int64) *HistoryCollection {
 	index := utils.GetDBIndex(userId)
 	session := wv.Core.SessionCollection.GetSession(index)
 	mutex := wv.Core.SessionCollection.GetMutex(index)
-	var history []UserHistory
+	var history []UserHistoryValue
 
 	mutex.Lock()
 	session.Model(ModelUserHistory).Where("owner_id = ?", userId).Find(&history)
@@ -131,6 +143,10 @@ func getUserHistoryFromDatabase(userId int64) *HistoryCollection {
 		OwnerId:    userId,
 		cachedTime: time.Now(),
 	}
+}
+
+func uIdForUserHistory(ownerId, userId int64) string {
+	return utils.ToBase10(ownerId) + "^" + utils.ToBase10(userId)
 }
 
 func checkUsersData() {

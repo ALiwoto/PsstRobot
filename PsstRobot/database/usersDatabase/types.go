@@ -13,12 +13,13 @@ type historyManager struct {
 }
 
 type HistoryCollection struct {
-	History    []UserHistory
+	History    []UserHistoryValue
 	OwnerId    int64
 	cachedTime time.Time
 }
 
-type UserHistory struct {
+type UserHistoryValue struct {
+	UniqueId   string `json:"unique_id" gorm:"primaryKey"`
 	OwnerId    int64  `json:"owner_id"`
 	TargetName string `json:"target_name"`
 	TargetId   int64  `json:"target_id"`
