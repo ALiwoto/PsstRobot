@@ -39,7 +39,7 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		_, _ = query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
 			Text:      "This whisper is too old...",
 			ShowAlert: true,
-			CacheTime: 500,
+			CacheTime: 2500,
 		})
 		return ext.EndGroups
 	}
@@ -50,7 +50,7 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 			_, _ = query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
 				Url:       w.GetUrl(bot),
 				ShowAlert: true,
-				CacheTime: 500,
+				CacheTime: 2500,
 			})
 			return ext.EndGroups
 		}
@@ -58,24 +58,28 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		_, err := query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
 			Text:      w.Text,
 			ShowAlert: true,
-			CacheTime: 500,
+			CacheTime: 2500,
 		})
 		if err != nil {
 			logging.Error(err)
 			return ext.EndGroups
 		}
 
-		if w.ShouldMarkAsRead(user) && !userHasPrivacy(w, user) {
-			md := mdparser.GetUserMention(user.FirstName, user.Id)
-			md.AppendNormalThis(" read the whisper")
-			_, _ = bot.EditMessageText(md.ToString(), &gotgbot.EditMessageTextOpts{
-				InlineMessageId:       query.InlineMessageId,
-				ParseMode:             core.MarkdownV2,
-				DisableWebPagePreview: true,
-			})
+		privacy := userHasPrivacy(w, user)
+
+		if w.ShouldMarkAsRead(user) {
+			if !privacy {
+				md := mdparser.GetUserMention(user.FirstName, user.Id)
+				md.AppendNormalThis(" read the whisper")
+				_, _ = bot.EditMessageText(md.ToString(), &gotgbot.EditMessageTextOpts{
+					InlineMessageId:       query.InlineMessageId,
+					ParseMode:             core.MarkdownV2,
+					DisableWebPagePreview: true,
+				})
+				usersDatabase.SaveInHistory(w.Sender, user)
+			}
 
 			whisperDatabase.RemoveWhisper(w)
-			usersDatabase.SaveInHistory(w.Sender, user)
 		}
 
 		return ext.EndGroups
@@ -84,7 +88,7 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	_, _ = query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
 		Text:      "This psst is not for you!",
 		ShowAlert: true,
-		CacheTime: 500,
+		CacheTime: 2500,
 	})
 	return ext.EndGroups
 }
