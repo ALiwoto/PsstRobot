@@ -46,6 +46,31 @@ func HasPrivacy(user *gotgbot.User) bool {
 	return PrivacyEnabled(user.Id)
 }
 
+func ChangePrivacy(user *gotgbot.User, privacy bool) {
+	data := GetUserData(user.Id)
+	if data == nil {
+		data = &UserData{
+			UserId:     user.Id,
+			cachedTime: time.Now(),
+		}
+
+		userDataMutex.Lock()
+		userDataMap[user.Id] = data
+		userDataMutex.Unlock()
+	}
+
+	data.PrivacyMode = true
+	UpdateUserData(data)
+}
+
+func EnablePrivacy(user *gotgbot.User) {
+	ChangePrivacy(user, true)
+}
+
+func DisablePrivacy(user *gotgbot.User) {
+	ChangePrivacy(user, false)
+}
+
 func GetUserData(userId int64) *UserData {
 	userDataMutex.Lock()
 	data := userDataMap[userId]

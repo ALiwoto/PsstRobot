@@ -36,6 +36,22 @@ func FixName(name string) string {
 	return name
 }
 
+func ArgsToBool(args []string) (bool, bool) {
+	if len(args) < 2 {
+		return false, false
+	}
+
+	myStr := strings.ToLower(args[1])
+	switch myStr {
+	case "on", "true", "enable":
+		return true, true
+	case "off", "false", "disable":
+		return false, true
+	}
+
+	return false, false
+}
+
 func GetDBIndex(id int64) int {
 	return int(strconv.FormatInt(id, 10)[0] - '0')
 }

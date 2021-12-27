@@ -1,5 +1,6 @@
 package startPlugin
 
 const (
-	startCommand = "start"
+	startCommand   = "start"
+	privacyCommand = "privacy"
 )

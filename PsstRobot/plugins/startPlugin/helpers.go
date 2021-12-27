@@ -7,7 +7,10 @@ import (
 
 func LoadHandlers(d *ext.Dispatcher, t []rune) {
 	startCmd := handlers.NewCommand(startCommand, startHandler)
+	privacyCmd := handlers.NewCommand(privacyCommand, privacyHandler)
 	startCmd.Triggers = t
+	privacyCmd.Triggers = t
 
 	d.AddHandler(startCmd)
+	d.AddHandler(privacyCmd)
 }

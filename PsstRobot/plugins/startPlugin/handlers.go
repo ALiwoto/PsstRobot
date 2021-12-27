@@ -3,6 +3,7 @@ package startPlugin
 import (
 	"strconv"
 
+	"github.com/ALiwoto/StrongStringGo/strongStringGo"
 	"github.com/ALiwoto/mdparser/mdparser"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/utils"
@@ -20,6 +21,40 @@ func startHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 	}
 
 	return normalStartHandler(bot, ctx)
+}
+
+func privacyHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
+	user := ctx.EffectiveUser
+	message := ctx.EffectiveMessage
+	args := strongStringGo.SplitN(message.Text, 2, " ")
+	enabled := usersDatabase.HasPrivacy(user)
+	preString := func() string {
+		if enabled {
+			return "enabled"
+		}
+		return "disabled"
+	}
+
+	var md mdparser.WMarkDown
+	shouldEnable, ok := utils.ArgsToBool(args)
+	if ok {
+		if shouldEnable == enabled {
+			md = mdparser.GetMono("Privacy mode is already " + preString() + ".")
+		} else {
+			enabled = shouldEnable
+			usersDatabase.ChangePrivacy(user, enabled)
+			md = mdparser.GetNormal("Privacy mode has been enabled successfully.")
+		}
+	} else {
+		md = mdparser.GetNormal("Usage: /privacy [on|off]")
+	}
+
+	_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
+		ParseMode:                core.MarkdownV2,
+		DisableWebPagePreview:    true,
+		AllowSendingWithoutReply: true,
+	})
+	return ext.EndGroups
 }
 
 func normalStartHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
