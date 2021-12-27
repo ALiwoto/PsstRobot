@@ -47,7 +47,10 @@ func privacyHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 		}
 	} else {
 		md = mdparser.GetBold("· Usage:")
-		md.AppendNormalThis("\n    /privacy [on|off]")
+		md.AppendNormalThis("\n    /privacy [on|off]\n\n" +
+			"Currently privacy mode is " + preString() +
+			" for every whisper you try to read.",
+		)
 	}
 
 	_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
