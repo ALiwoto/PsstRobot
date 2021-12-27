@@ -59,7 +59,7 @@ func ChangePrivacy(user *gotgbot.User, privacy bool) {
 		userDataMutex.Unlock()
 	}
 
-	data.PrivacyMode = true
+	data.PrivacyMode = privacy
 	UpdateUserData(data)
 }
 
