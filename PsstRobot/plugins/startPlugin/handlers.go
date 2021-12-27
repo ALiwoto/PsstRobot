@@ -39,14 +39,14 @@ func privacyHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 	shouldEnable, ok := utils.ArgsToBool(args)
 	if ok {
 		if shouldEnable == enabled {
-			md = mdparser.GetMono("Privacy mode is already " + preString() + ".")
+			md = mdparser.GetNormal("Privacy mode is already " + preString() + ".")
 		} else {
 			enabled = shouldEnable
 			usersDatabase.ChangePrivacy(user, enabled)
-			md = mdparser.GetNormal("Privacy mode has been enabled successfully.")
+			md = mdparser.GetNormal("Privacy mode has been " + preString() + " successfully.")
 		}
 	} else {
-		md = mdparser.GetNormal("Usage: /privacy [on|off]")
+		md = mdparser.GetNormal("Usage:\n  /privacy [on|off]")
 	}
 
 	_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{

@@ -2,6 +2,8 @@ package whisperPlugin
 
 import (
 	wv "github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/wotoValues"
+	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/database/usersDatabase"
+	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/database/whisperDatabase"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext/handlers"
@@ -21,6 +23,10 @@ func answerForHelp(bot *gotgbot.Bot, ctx *ext.Context) error {
 		SwitchPmParameter: wv.HelpDataInline,
 	})
 	return ext.EndGroups
+}
+
+func userHasPrivacy(w *whisperDatabase.Whisper, user *gotgbot.User) bool {
+	return !w.IsForEveryone() && usersDatabase.HasPrivacy(user)
 }
 
 func LoadHandlers(d *ext.Dispatcher, t []rune) {

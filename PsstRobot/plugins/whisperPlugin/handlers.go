@@ -65,7 +65,7 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 			return ext.EndGroups
 		}
 
-		if w.ShouldMarkAsRead(user) && !usersDatabase.HasPrivacy(user) {
+		if w.ShouldMarkAsRead(user) && !userHasPrivacy(w, user) {
 			md := mdparser.GetUserMention(user.FirstName, user.Id)
 			md.AppendNormalThis(" read the whisper")
 			_, _ = bot.EditMessageText(md.ToString(), &gotgbot.EditMessageTextOpts{

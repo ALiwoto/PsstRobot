@@ -239,6 +239,10 @@ func (w *Whisper) CanRead(u *gotgbot.User) bool {
 	return false
 }
 
+func (w *Whisper) IsForEveryone() bool {
+	return w.Recipient == 0 && w.RecipientUsername == ""
+}
+
 func (w *Whisper) ShouldMarkAsRead(u *gotgbot.User) bool {
 	return u.Id != w.Sender
 }
