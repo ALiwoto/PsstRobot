@@ -37,6 +37,15 @@ func GetUserHistory(ownerId int64) *HistoryCollection {
 	return collection
 }
 
+func PrivacyEnabled(userId int64) bool {
+	d := GetUserData(userId)
+	return d != nil && d.PrivacyMode
+}
+
+func HasPrivacy(user *gotgbot.User) bool {
+	return PrivacyEnabled(user.Id)
+}
+
 func GetUserData(userId int64) *UserData {
 	userDataMutex.Lock()
 	data := userDataMap[userId]

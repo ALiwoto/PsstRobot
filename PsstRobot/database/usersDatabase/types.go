@@ -26,7 +26,8 @@ type UserHistoryValue struct {
 }
 
 type UserData struct {
-	UserId     int64      `json:"user_id" gorm:"primaryKey"`
-	Status     UserStatus `json:"status"`
-	cachedTime time.Time  `json:"-" gorm:"-" sql:"-"`
+	UserId      int64      `json:"user_id" gorm:"primaryKey"`
+	Status      UserStatus `json:"status"`
+	PrivacyMode bool       `json:"privacy_mode"`
+	cachedTime  time.Time  `json:"-" gorm:"-" sql:"-"`
 }

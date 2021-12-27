@@ -19,6 +19,26 @@ func startHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 		return sendWhisperText(bot, ctx)
 	}
 
+	return normalStartHandler(bot, ctx)
+}
+
+func normalStartHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
+	user := ctx.EffectiveUser
+	message := ctx.EffectiveMessage
+
+	md := mdparser.GetNormal("Hello ")
+	md.AppendMentionThis(user.FirstName, user.Id)
+	md.AppendNormalThis("!\nThis bot allows you to send whisper messages")
+	md.AppendNormalThis(" to other users.\n")
+	md.AppendNormalThis("You don't need to add this bot in any group,")
+	md.AppendNormalThis(" it works in inline mode only and can send advanced")
+	md.AppendNormalThis(" whispers (longs whispers and whispers with media).")
+
+	_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
+		ParseMode:             core.MarkdownV2,
+		DisableWebPagePreview: true,
+	})
+
 	return ext.EndGroups
 }
 
@@ -31,14 +51,14 @@ func sendWhisperText(bot *gotgbot.Bot, ctx *ext.Context) error {
 		// TODO:
 		// display original welcome message which is on
 		// normal /start command :0
-		return ext.EndGroups
+		return normalStartHandler(bot, ctx)
 	}
 
 	if !w.CanRead(user) {
 		// TODO:
 		// display original welcome message which is on
 		// normal /start command :0
-		return ext.EndGroups
+		return normalStartHandler(bot, ctx)
 	}
 
 	senderInfo, err := bot.GetChat(w.Sender)
@@ -71,9 +91,7 @@ func sendWhisperText(bot *gotgbot.Bot, ctx *ext.Context) error {
 		AllowSendingWithoutReply: true,
 	})
 
-	//bot.SendSticker(0, "", &gotgbot.SendStickerOpts{})
-
-	if w.ShouldMarkAsRead(user) {
+	if w.ShouldMarkAsRead(user) && usersDatabase.HasPrivacy(user) {
 		md := mdparser.GetUserMention(user.FirstName, user.Id)
 		md.AppendNormalThis(" read the whisper")
 		_, _ = bot.EditMessageText(md.ToString(), &gotgbot.EditMessageTextOpts{
