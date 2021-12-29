@@ -26,6 +26,11 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	user := ctx.EffectiveUser
 	myStrs := strings.Split(query.Data, sepChar)
 	if len(myStrs) < 2 {
+		// cached time shouldn't be long here
+		// generating whispers won't take that much long, so cached time
+		// should be short enough that user can see the whisper message soon.
+		// also, bot will edit the message and change the callback query data
+		// anyway, so there is no point to choose it long.
 		_, _ = query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
 			Text:      "This whisper is not generated yet...",
 			ShowAlert: true,
@@ -222,12 +227,68 @@ func chosenWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 //---------------------------------------------------------
 
 func generatorListenerFilter(msg *gotgbot.Message) bool {
-	return false
+	return msg.Chat.Type == "private" && usersDatabase.IsUserCreating(msg.From)
 }
 
 func generatorListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
+	if ctx.Message.MediaGroupId != "" {
+		// user wants to send a media group whisper.
+		return mediaGroupListenerHandler(bot, ctx)
+	}
+
+	//message := ctx.Message
+	return ext.ContinueGroups
+}
+
+func mediaGroupListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
+	user := ctx.EffectiveUser
+	MediaGroupMutex.Lock()
+	w := MediaGroupWhisperMap[user.Id]
+	MediaGroupMutex.Unlock()
+	if w == nil {
+		w = &MediaGroupWhisper{
+			OwnerId:   user.Id,
+			MediaType: extractMediaType(ctx.Message),
+			ctx:       ctx,
+			bot:       bot,
+		}
+		MediaGroupMutex.Lock()
+		MediaGroupWhisperMap[user.Id] = w
+		MediaGroupMutex.Unlock()
+		go sendMediaGroupResponse(w)
+	}
+
+	w.AddElement(ctx.Message)
 
 	return ext.ContinueGroups
+}
+
+func sendMediaGroupResponse(w *MediaGroupWhisper) {
+	// sleep for at least 2 seconds, so bot can receive all media group messages
+	// from telegram.
+	time.Sleep(time.Second * 2)
+
+	MediaGroupMutex.Lock()
+	delete(MediaGroupWhisperMap, w.OwnerId)
+	MediaGroupMutex.Unlock()
+
+	message := w.ctx.Message
+	whisper := w.ToWhisper()
+
+	markup := &gotgbot.InlineKeyboardMarkup{}
+	markup.InlineKeyboard = make([][]gotgbot.InlineKeyboardButton, 1)
+	markup.InlineKeyboard[0] = append(
+		markup.InlineKeyboard[0], whisper.GetInlineShareButton(),
+	)
+
+	whisperDatabase.AddWhisper(whisper)
+
+	_, _ = message.Reply(w.bot, "", &gotgbot.SendMessageOpts{
+		ParseMode:                core.MarkdownV2,
+		AllowSendingWithoutReply: true,
+		DisableWebPagePreview:    true,
+		ReplyMarkup:              markup,
+	})
 }
 
 //---------------------------------------------------------

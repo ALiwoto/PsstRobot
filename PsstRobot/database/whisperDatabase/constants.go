@@ -11,11 +11,15 @@ const (
 
 // whisper message types
 const (
-	WhisperTypePlainText WhisperType = iota
+	WhisperTypeUnknown WhisperType = iota
+	WhisperTypePlainText
 	WhisperTypePhoto
 	WhisperTypeVideo
 	WhisperTypeAudio
+	WhisperTypeVoice
 	WhisperTypeSticker
 	WhisperTypeDocument
+	WhisperTypeVideoNote
 	WhisperTypeAnimation
+	WhisperTypeDice
 )

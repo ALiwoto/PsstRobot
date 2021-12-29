@@ -5,6 +5,7 @@ import (
 	"github.com/PaulSonOfLars/gotgbot/v2/ext/handlers"
 )
 
+// LoadHandlers helper function will load all handlers for the current plugin.
 func LoadHandlers(d *ext.Dispatcher, t []rune) {
 	startCmd := handlers.NewCommand(startCommand, startHandler)
 	privacyCmd := handlers.NewCommand(privacyCommand, privacyHandler)

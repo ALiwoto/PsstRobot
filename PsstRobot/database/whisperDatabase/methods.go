@@ -295,3 +295,11 @@ func (w *Whisper) ParseRecipient(chosen *gotgbot.ChosenInlineResult) {
 func (w *Whisper) IsTooLong() bool {
 	return len(w.Text) > MaxTextLength
 }
+
+func (w *Whisper) GetInlineShareButton() gotgbot.InlineKeyboardButton {
+	s := "-wh::" + w.UniqueId + "::"
+	return gotgbot.InlineKeyboardButton{
+		Text:              "📤 share whisper",
+		SwitchInlineQuery: &s,
+	}
+}

@@ -101,6 +101,19 @@ func GetUserData(userId int64) *UserData {
 	return data
 }
 
+func GetUserStatus(user *gotgbot.User) UserStatus {
+	data := GetUserData(user.Id)
+	if data == nil {
+		return UserStatusIdle
+	}
+
+	return data.Status
+}
+
+func IsUserCreating(user *gotgbot.User) bool {
+	return GetUserStatus(user) == UserStatusCreating
+}
+
 func UpdateUserData(data *UserData) {
 	index := utils.GetDBIndex(data.UserId)
 	session := wv.Core.SessionCollection.GetSession(index)
