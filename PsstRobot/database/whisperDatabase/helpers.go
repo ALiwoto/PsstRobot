@@ -63,6 +63,7 @@ func CreateNewWhisper(result *gotgbot.ChosenInlineResult) *Whisper {
 		Sender:          result.From.Id,
 		Text:            result.Query,
 		InlineMessageId: result.InlineMessageId,
+		Type:            WhisperTypePlainText,
 	}
 	w.ParseRecipient(result)
 	w.GenerateUniqueID()
