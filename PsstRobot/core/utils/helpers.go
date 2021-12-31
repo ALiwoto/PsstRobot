@@ -29,11 +29,15 @@ func GetName(user *gotgbot.User) string {
 }
 
 func ExtractUsername(text string) string {
+	if text[0] == '@' {
+		return text
+	}
 	return ""
 }
 
 func ExtractUserId(text string) int64 {
-	return 0
+	value, _ := strconv.ParseInt(text, 10, 64)
+	return value
 }
 
 func ExtractUserIdFromMessage(message *gotgbot.Message) int64 {

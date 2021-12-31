@@ -342,9 +342,9 @@ func generatorListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 		advanced.Text = message.Caption
 	}
 	advanced.FileId = extractFileId(message)
-	addToMap(advanced)
 
-	//message := ctx.Message
+	sendAdvancedWhisperResponse(advanced)
+
 	return ext.ContinueGroups
 }
 
@@ -383,7 +383,10 @@ func sendAdvancedWhisperResponse(w *AdvancedWhisper) {
 
 	whisperDatabase.AddWhisper(whisper)
 
-	_, _ = message.Reply(w.bot, "", &gotgbot.SendMessageOpts{
+	md := mdparser.GetNormal("Done! The whisper is ready to be sent.")
+	md.AppendNormalThis(". \nClick the button below to share it.")
+
+	_, _ = message.Reply(w.bot, md.ToString(), &gotgbot.SendMessageOpts{
 		ParseMode:                core.MarkdownV2,
 		AllowSendingWithoutReply: true,
 		DisableWebPagePreview:    true,
