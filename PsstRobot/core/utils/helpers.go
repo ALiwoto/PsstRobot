@@ -41,7 +41,14 @@ func ExtractUserId(text string) int64 {
 }
 
 func ExtractUserIdFromMessage(message *gotgbot.Message) int64 {
-	return 0
+	if len(message.Entities) > 0 {
+		for _, entity := range message.Entities {
+			if entity.Type == "text_mention" && entity.User != nil {
+				return entity.User.Id
+			}
+		}
+	}
+	return ExtractUserId(message.Text)
 }
 
 func FixName(name string) string {
