@@ -248,7 +248,7 @@ func cancelWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 
 	md := mdparser.GetNormal("The latest operation has been cancelled. ")
 	md.AppendNormalThis("Anything else I can do for you?")
-	md.AppendNormal("\n\nSend /help for a list of possible commands.")
+	md.AppendNormalThis("\n\nSend /help for a list of possible commands.")
 
 	_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
 		ParseMode: core.MarkdownV2,
