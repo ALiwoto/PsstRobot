@@ -8,7 +8,9 @@ const (
 )
 
 const (
-	ResultIdentifier = "::"
-	HelpDataInline   = "help-inline"
-	StartDataCreate  = "create"
+	ResultIdentifier     = "::"
+	AdvancedInlinePrefix = "-wh::"
+	AdvancedInlineSuffix = "::"
+	HelpDataInline       = "help-inline"
+	StartDataCreate      = "create"
 )

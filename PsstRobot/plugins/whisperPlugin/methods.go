@@ -2,6 +2,7 @@ package whisperPlugin
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/ALiwoto/mdparser/mdparser"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/database/whisperDatabase"
@@ -19,11 +20,11 @@ func (m *MediaGroupWhisper) AddElement(message *gotgbot.Message) {
 	// WhisperTypeAnimation
 	// WhisperTypeDice
 	e := &MediaGroupElement{
-		Caption: message.Caption,
+		Caption: strings.ReplaceAll(message.Caption, whisperDatabase.CaptionSep, " "),
 	}
 	switch m.MediaType {
 	case whisperDatabase.WhisperTypePlainText:
-		e.Caption = message.Text
+		e.Caption = strings.ReplaceAll(message.Text, whisperDatabase.CaptionSep, " ")
 	case whisperDatabase.WhisperTypePhoto:
 		e.FileId = message.Photo[len(message.Photo)-1].FileId
 	case whisperDatabase.WhisperTypeVideo:
@@ -44,14 +45,47 @@ func (m *MediaGroupWhisper) AddElement(message *gotgbot.Message) {
 		e.Caption = message.Dice.Emoji
 	}
 
+	e.FileId = strings.ReplaceAll(e.FileId, whisperDatabase.MediaGroupSep, " ")
+
 	m.Elements = append(m.Elements, e)
+}
+
+func (m *MediaGroupWhisper) getFileIDs() string {
+	var result string
+	for _, current := range m.Elements {
+		result += current.FileId + whisperDatabase.MediaGroupSep
+	}
+	return result
+}
+
+func (m *MediaGroupWhisper) getCaptions() string {
+	var result string
+	for _, current := range m.Elements {
+		result += current.Caption + whisperDatabase.CaptionSep
+	}
+	return result
+}
+
+func (m *MediaGroupWhisper) toWhisper(a *AdvancedWhisper) *whisperDatabase.Whisper {
+	w := &whisperDatabase.Whisper{
+		Sender:            a.OwnerId,
+		Text:              m.getCaptions(),
+		Type:              m.MediaType,
+		FileId:            m.getFileIDs(),
+		Recipient:         a.TargetId,
+		RecipientUsername: a.TargetUsername,
+	}
+
+	w.GenerateUniqueID()
+
+	return w
 }
 
 //---------------------------------------------------------
 
 func (a *AdvancedWhisper) ToWhisper() *whisperDatabase.Whisper {
 	if a.MediaGroup != nil {
-		return nil /* TODO */
+		return a.MediaGroup.toWhisper(a)
 	}
 	/*
 		w := &Whisper{
@@ -74,7 +108,9 @@ func (a *AdvancedWhisper) ToWhisper() *whisperDatabase.Whisper {
 	}
 
 	w.GenerateUniqueID()
-	whisperDatabase.AddWhisper(w)
+
+	// we shouldn't use AddWhisper function here.
+	//whisperDatabase.AddWhisper(w)
 
 	return w
 }

@@ -72,6 +72,27 @@ func (w *Whisper) GetUrl(b *gotgbot.Bot) string {
 	return "http://t.me/" + b.Username + "?start=" + url.QueryEscape(w.UniqueId)
 }
 
+func (w *Whisper) GetInlineTitle(bot *gotgbot.Bot) string {
+	var name string
+	if w.RecipientUsername != "" {
+		name = w.RecipientUsername
+	} else if w.Recipient != 0 {
+		chat, _ := bot.GetChat(w.Recipient)
+		if chat != nil {
+			name = chat.FirstName
+		} else {
+			name = strconv.FormatInt(w.Recipient, 10)
+		}
+	} else {
+		name = "everyone"
+	}
+	return "An advanced whisper message to " + name + "."
+}
+
+func (w *Whisper) GetInlineDescription() string {
+	return "Only they can read this advanced whisper."
+}
+
 func (w *Whisper) ShouldRedirect() bool {
 	return w.Type != WhisperTypePlainText || w.IsTooLong()
 }
@@ -81,6 +102,7 @@ func (w *Whisper) IsMediaGroup() bool {
 }
 
 func (w *Whisper) GetMediaGroup() []gotgbot.InputMedia {
+	var result []gotgbot.InputMedia
 	// - InputMediaAnimation
 	// - InputMediaDocument
 	// - InputMediaAudio
@@ -88,19 +110,19 @@ func (w *Whisper) GetMediaGroup() []gotgbot.InputMedia {
 	// - InputMediaVideo
 	switch w.Type {
 	case WhisperTypeAnimation:
-		return w.getAnimationArray()
+		result = w.getAnimationArray()
 	case WhisperTypeDocument:
-		return w.getDocumentArray()
+		result = w.getDocumentArray()
 	case WhisperTypeAudio:
-		return w.getAudioArray()
+		result = w.getAudioArray()
 	case WhisperTypePhoto:
-		return w.getPhotoArray()
+		result = w.getPhotoArray()
 	case WhisperTypeVideo:
-		return w.getVideoArray()
+		result = w.getVideoArray()
 	}
 
-	/* not a media */
-	return nil
+	// drop the last result
+	return result[:len(result)-1]
 }
 
 func (w *Whisper) getFileIDs() []string {
@@ -239,6 +261,10 @@ func (w *Whisper) CanRead(u *gotgbot.User) bool {
 	return false
 }
 
+func (w *Whisper) CanSendInlineAdvanced(user *gotgbot.User) bool {
+	return w.InlineMessageId == "" && user.Id == w.Sender
+}
+
 func (w *Whisper) IsForEveryone() bool {
 	return w.Recipient == 0 && w.RecipientUsername == ""
 }
@@ -297,7 +323,7 @@ func (w *Whisper) IsTooLong() bool {
 }
 
 func (w *Whisper) GetInlineShareButton() gotgbot.InlineKeyboardButton {
-	s := "-wh::" + w.UniqueId + "::"
+	s := wv.AdvancedInlinePrefix + w.UniqueId + wv.AdvancedInlineSuffix
 	return gotgbot.InlineKeyboardButton{
 		Text:              "📤 share whisper",
 		SwitchInlineQuery: &s,

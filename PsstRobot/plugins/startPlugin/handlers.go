@@ -111,7 +111,9 @@ func sendWhisperText(bot *gotgbot.Bot, ctx *ext.Context) error {
 	}
 
 	text := mdparser.GetBold("🔹This whisper has been sent from ").AppendThis(senderMd)
-	text.AppendBoldThis(" to ").AppendThis(targetMd).AppendBoldThis(":\n\n")
+	text.AppendBoldThis(" to ").AppendThis(targetMd)
+	text.AppendBoldThis(" at ").AppendMonoThis(w.CreatedAt.UTC().Format("2006-01-02 15:04:05"))
+	text.AppendBoldThis(":\n\n")
 	if w.Type == whisperDatabase.WhisperTypePlainText {
 		text.AppendNormalThis(w.Text)
 	}
@@ -123,56 +125,61 @@ func sendWhisperText(bot *gotgbot.Bot, ctx *ext.Context) error {
 	})
 
 	if w.Type != whisperDatabase.WhisperTypePlainText {
-		switch w.Type {
-		//WhisperTypePhoto
-		//WhisperTypeVideo
-		//WhisperTypeAudio
-		//WhisperTypeVoice
-		//WhisperTypeSticker
-		//WhisperTypeDocument
-		//WhisperTypeVideoNote
-		//WhisperTypeAnimation
-		//WhisperTypeDice
-		case whisperDatabase.WhisperTypePhoto:
-			_, _ = bot.SendPhoto(user.Id, w.FileId, &gotgbot.SendPhotoOpts{
-				Caption: w.Text,
-			})
-		case whisperDatabase.WhisperTypeVideo:
-			_, _ = bot.SendVideo(user.Id, w.FileId, &gotgbot.SendVideoOpts{
-				Caption: w.Text,
-			})
-		case whisperDatabase.WhisperTypeAudio:
-			_, _ = bot.SendAudio(user.Id, w.FileId, &gotgbot.SendAudioOpts{
-				Caption: w.Text,
-			})
-		case whisperDatabase.WhisperTypeVoice:
-			_, _ = bot.SendVoice(user.Id, w.FileId, &gotgbot.SendVoiceOpts{
-				Caption: w.Text,
-			})
-		case whisperDatabase.WhisperTypeSticker:
-			_, _ = bot.SendSticker(user.Id, w.FileId, &gotgbot.SendStickerOpts{
-				//Caption: w.Text,
-			})
-		case whisperDatabase.WhisperTypeDocument:
-			_, _ = bot.SendDocument(user.Id, w.FileId, &gotgbot.SendDocumentOpts{
-				Caption: w.Text,
-			})
-		case whisperDatabase.WhisperTypeVideoNote:
-			_, _ = bot.SendVideoNote(user.Id, w.FileId, &gotgbot.SendVideoNoteOpts{
-				//Caption: w.Text,
-			})
-		case whisperDatabase.WhisperTypeAnimation:
-			_, _ = bot.SendAnimation(user.Id, w.FileId, &gotgbot.SendAnimationOpts{
-				Caption: w.Text,
-			})
-		case whisperDatabase.WhisperTypeDice:
-			_, _ = bot.SendDice(user.Id, &gotgbot.SendDiceOpts{
-				Emoji: w.Text,
-			})
+		if w.IsMediaGroup() {
+			_, _ = bot.SendMediaGroup(user.Id, w.GetMediaGroup(), nil)
+		} else {
+			switch w.Type {
+			//WhisperTypePhoto
+			//WhisperTypeVideo
+			//WhisperTypeAudio
+			//WhisperTypeVoice
+			//WhisperTypeSticker
+			//WhisperTypeDocument
+			//WhisperTypeVideoNote
+			//WhisperTypeAnimation
+			//WhisperTypeDice
+			case whisperDatabase.WhisperTypePhoto:
+				_, _ = bot.SendPhoto(user.Id, w.FileId, &gotgbot.SendPhotoOpts{
+					Caption: w.Text,
+				})
+			case whisperDatabase.WhisperTypeVideo:
+				_, _ = bot.SendVideo(user.Id, w.FileId, &gotgbot.SendVideoOpts{
+					Caption: w.Text,
+				})
+			case whisperDatabase.WhisperTypeAudio:
+				_, _ = bot.SendAudio(user.Id, w.FileId, &gotgbot.SendAudioOpts{
+					Caption: w.Text,
+				})
+			case whisperDatabase.WhisperTypeVoice:
+				_, _ = bot.SendVoice(user.Id, w.FileId, &gotgbot.SendVoiceOpts{
+					Caption: w.Text,
+				})
+			case whisperDatabase.WhisperTypeSticker:
+				_, _ = bot.SendSticker(user.Id, w.FileId, &gotgbot.SendStickerOpts{
+					//Caption: w.Text,
+				})
+			case whisperDatabase.WhisperTypeDocument:
+				_, _ = bot.SendDocument(user.Id, w.FileId, &gotgbot.SendDocumentOpts{
+					Caption: w.Text,
+				})
+			case whisperDatabase.WhisperTypeVideoNote:
+				_, _ = bot.SendVideoNote(user.Id, w.FileId, &gotgbot.SendVideoNoteOpts{
+					//Caption: w.Text,
+				})
+			case whisperDatabase.WhisperTypeAnimation:
+				_, _ = bot.SendAnimation(user.Id, w.FileId, &gotgbot.SendAnimationOpts{
+					Caption: w.Text,
+				})
+			case whisperDatabase.WhisperTypeDice:
+				_, _ = bot.SendDice(user.Id, &gotgbot.SendDiceOpts{
+					Emoji: w.Text,
+				})
+			}
 		}
+
 	}
 
-	if w.ShouldMarkAsRead(user) && usersDatabase.HasPrivacy(user) {
+	if w.ShouldMarkAsRead(user) && !usersDatabase.HasPrivacy(user) {
 		md := mdparser.GetUserMention(user.FirstName, user.Id)
 		md.AppendNormalThis(" read the whisper")
 		_, _ = bot.EditMessageText(md.ToString(), &gotgbot.EditMessageTextOpts{

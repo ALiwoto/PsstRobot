@@ -24,6 +24,14 @@ func answerForLongAdvanced(bot *gotgbot.Bot, ctx *ext.Context) error {
 	return ext.EndGroups
 }
 
+func answerForWrongAdvanced(bot *gotgbot.Bot, ctx *ext.Context) error {
+	_, _ = ctx.InlineQuery.Answer(bot, nil, &gotgbot.AnswerInlineQueryOpts{
+		SwitchPmText:      "Invalid advanced whisper! Please create another one!",
+		SwitchPmParameter: wv.StartDataCreate,
+	})
+	return ext.EndGroups
+}
+
 // answerForHelp is a helper function and should be called when the query entered by user
 // is wrong. it will redirect the user to bot's pm with parameter equal to `wv.HelpDataInline`.
 // `wv.HelpDataInline` is a constant with value of "help-inline"; so basically,

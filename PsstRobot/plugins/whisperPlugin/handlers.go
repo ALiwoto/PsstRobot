@@ -113,6 +113,38 @@ func sendWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		return answerForLongAdvanced(bot, ctx)
 	}
 
+	if wv.IsAdvancedInline(query.Query) {
+		uniqueId := wv.GetUniqueIdFromAdvanced(query.Query)
+		if uniqueId == "" {
+			return answerForWrongAdvanced(bot, ctx)
+		}
+
+		w := whisperDatabase.GetWhisper(uniqueId)
+		if w == nil || !w.CanSendInlineAdvanced(user) {
+			return answerForWrongAdvanced(bot, ctx)
+		}
+
+		var advancedResults []gotgbot.InlineQueryResult
+		markup := &gotgbot.InlineKeyboardMarkup{}
+		markup.InlineKeyboard = make([][]gotgbot.InlineKeyboardButton, 1)
+		markup.InlineKeyboard[0] = append(markup.InlineKeyboard[0], gotgbot.InlineKeyboardButton{
+			Text:         "🔐 show message",
+			CallbackData: ShowWhisperData + sepChar,
+		})
+
+		advancedResults = append(advancedResults, &gotgbot.InlineQueryResultArticle{
+			Id:                  query.Query,
+			Title:               w.GetInlineTitle(bot),
+			Description:         w.GetInlineDescription(),
+			InputMessageContent: generatingInputMessageContent,
+			ReplyMarkup:         markup,
+		})
+
+		_, _ = query.Answer(bot, advancedResults, &gotgbot.AnswerInlineQueryOpts{
+			IsPersonal: true,
+		})
+	}
+
 	var results []gotgbot.InlineQueryResult
 	var isAnyone bool
 	markup := &gotgbot.InlineKeyboardMarkup{}
@@ -187,7 +219,6 @@ func sendWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 					ReplyMarkup:         markup,
 				})
 			}
-
 		}
 	}
 
@@ -207,7 +238,21 @@ func chosenWhisperFilter(cir *gotgbot.ChosenInlineResult) bool {
 
 func chosenWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	result := ctx.ChosenInlineResult
-	w := whisperDatabase.CreateNewWhisper(result)
+	var w *whisperDatabase.Whisper
+	if wv.IsAdvancedInline(result.ResultId) {
+		uniqueId := wv.GetUniqueIdFromAdvanced(result.ResultId)
+		w = whisperDatabase.GetWhisper(uniqueId)
+		if w == nil {
+			return ext.EndGroups
+		}
+
+		w.InlineMessageId = result.InlineMessageId
+		/* update the whisper actually */
+		whisperDatabase.AddWhisper(w)
+	} else {
+		w = whisperDatabase.CreateNewWhisper(result)
+	}
+
 	markup := &gotgbot.InlineKeyboardMarkup{}
 	markup.InlineKeyboard = make([][]gotgbot.InlineKeyboardButton, 1)
 	markup.InlineKeyboard[0] = append(markup.InlineKeyboard[0], gotgbot.InlineKeyboardButton{
@@ -326,6 +371,9 @@ func generatorListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 		return ext.EndGroups
 	}
 
+	/* hacky way of avoiding conflict hehe :3 */
+	advanced.ctx = ctx
+
 	if ctx.Message.MediaGroupId != "" {
 		// user wants to send a media group whisper.
 		return mediaGroupListenerHandler(advanced, ctx)
@@ -335,9 +383,9 @@ func generatorListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 	if advanced.MediaType == whisperDatabase.WhisperTypePlainText {
 		advanced.Text = message.Text
 	} else {
+		advanced.FileId = extractFileId(message)
 		advanced.Text = message.Caption
 	}
-	advanced.FileId = extractFileId(message)
 
 	sendAdvancedWhisperResponse(advanced)
 	usersDatabase.ChangeUserStatus(user, usersDatabase.UserStatusIdle)
@@ -379,6 +427,7 @@ func sendAdvancedWhisperResponse(w *AdvancedWhisper) {
 	)
 
 	whisperDatabase.AddWhisper(whisper)
+	usersDatabase.ChangeUserStatus(w.ctx.EffectiveUser, usersDatabase.UserStatusIdle)
 
 	md := mdparser.GetNormal("Done! The whisper is ready to be sent.")
 	md.AppendNormalThis(". \nClick the button below to share it.")
