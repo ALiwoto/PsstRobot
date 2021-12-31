@@ -310,16 +310,16 @@ func generatorListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 			OwnerId: user.Id,
 		}
 
-		if isEveryone(message.Text) {
+		if isEveryone(text[1]) {
 			addToMap(advanced)
 			return ext.EndGroups
 		}
 
-		username := utils.ExtractUsername(message.Text)
+		username := utils.ExtractUsername(text[1])
 		if username != "" {
 			advanced.TargetUsername = username
 		} else {
-			advanced.TargetId = utils.ExtractUserIdFromMessage(message)
+			advanced.TargetId = utils.ExtractUserIdFromMessage(message, text[1])
 			if advanced.TargetId <= 0 {
 				invalidInput()
 				return ext.EndGroups
