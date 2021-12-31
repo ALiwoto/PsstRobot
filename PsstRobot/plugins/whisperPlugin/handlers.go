@@ -340,6 +340,7 @@ func generatorListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 	advanced.FileId = extractFileId(message)
 
 	sendAdvancedWhisperResponse(advanced)
+	usersDatabase.ChangeUserStatus(user, usersDatabase.UserStatusIdle)
 
 	return ext.ContinueGroups
 }

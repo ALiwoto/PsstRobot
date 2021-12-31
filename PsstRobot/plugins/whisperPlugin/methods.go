@@ -50,7 +50,33 @@ func (m *MediaGroupWhisper) AddElement(message *gotgbot.Message) {
 //---------------------------------------------------------
 
 func (a *AdvancedWhisper) ToWhisper() *whisperDatabase.Whisper {
-	return nil
+	if a.MediaGroup != nil {
+		return nil /* TODO */
+	}
+	/*
+		w := &Whisper{
+			Sender:          result.From.Id,
+			Text:            result.Query,
+			InlineMessageId: result.InlineMessageId,
+			Type:            WhisperTypePlainText,
+		}
+		w.ParseRecipient(result)
+		w.GenerateUniqueID()
+		AddWhisper(w)
+	*/
+	w := &whisperDatabase.Whisper{
+		Sender:            a.OwnerId,
+		Text:              a.Text,
+		Type:              a.MediaType,
+		FileId:            a.FileId,
+		Recipient:         a.TargetId,
+		RecipientUsername: a.TargetUsername,
+	}
+
+	w.GenerateUniqueID()
+	whisperDatabase.AddWhisper(w)
+
+	return w
 }
 
 func (a *AdvancedWhisper) IsForEveryone() bool {

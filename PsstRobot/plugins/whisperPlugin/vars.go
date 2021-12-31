@@ -15,7 +15,7 @@ var (
 		InlineKeyboard: [][]gotgbot.InlineKeyboardButton{
 			{
 				{
-					Text:         "🔍 Cancel",
+					Text:         "💢 Cancel",
 					CallbackData: CancelWhisperData,
 				},
 			},
