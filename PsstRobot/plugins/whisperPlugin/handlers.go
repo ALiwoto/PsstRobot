@@ -290,7 +290,7 @@ func generatorListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 		})
 	}
 
-	if len(text) != 0 && text[0][1:] == CancelWhisperData {
+	if len(text) > 0 && text[0][1:] == CancelWhisperData {
 		return cancelWhisperResponse(bot, ctx)
 	}
 
