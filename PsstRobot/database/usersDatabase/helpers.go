@@ -59,7 +59,43 @@ func ChangePrivacy(user *gotgbot.User, privacy bool) {
 		userDataMutex.Unlock()
 	}
 
+	if privacy == data.PrivacyMode {
+		// prevent from sending unnecessary database queries
+		return
+	}
+
 	data.PrivacyMode = privacy
+	UpdateUserData(data)
+}
+
+func IsUserBanned(user *gotgbot.User) bool {
+	data := GetUserData(user.Id)
+	return data != nil && data.IsBanned()
+}
+
+func ChangeUserStatus(user *gotgbot.User, status UserStatus) {
+	ChangeUserStatusById(user.Id, status)
+}
+
+func ChangeUserStatusById(userId int64, status UserStatus) {
+	data := GetUserData(userId)
+	if data == nil {
+		data = &UserData{
+			UserId:     userId,
+			cachedTime: time.Now(),
+		}
+
+		userDataMutex.Lock()
+		userDataMap[userId] = data
+		userDataMutex.Unlock()
+	}
+
+	if data.Status == status {
+		// prevent from sending unnecessary database queries
+		return
+	}
+
+	data.Status = status
 	UpdateUserData(data)
 }
 

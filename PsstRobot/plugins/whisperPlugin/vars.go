@@ -11,9 +11,19 @@ var (
 		MessageText:           "Generating whisper message...",
 		DisableWebPagePreview: true,
 	}
+	titleChosenMarkup = &gotgbot.InlineKeyboardMarkup{
+		InlineKeyboard: [][]gotgbot.InlineKeyboardButton{
+			{
+				{
+					Text:         "🔍 Cancel",
+					CallbackData: CancelWhisperData,
+				},
+			},
+		},
+	}
 )
 
 var (
-	MediaGroupWhisperMap = make(map[int64]*MediaGroupWhisper)
-	MediaGroupMutex      = &sync.Mutex{}
+	advancedWhisperMap   = make(map[int64]*AdvancedWhisper)
+	advancedWhisperMutex = &sync.Mutex{}
 )

@@ -1,6 +1,8 @@
 package whisperPlugin
 
 import (
+	"strings"
+
 	wv "github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/wotoValues"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/database/usersDatabase"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/database/whisperDatabase"
@@ -87,15 +89,65 @@ func extractMediaType(message *gotgbot.Message) whisperDatabase.WhisperType {
 	return whisperDatabase.WhisperTypeUnknown
 }
 
+func extractFileId(message *gotgbot.Message) string {
+	// WhisperTypePhoto
+	// WhisperTypeVideo
+	// WhisperTypeAudio
+	// WhisperTypeVoice
+	// WhisperTypeSticker
+	// WhisperTypeDocument
+	// WhisperTypeVideoNote
+	// WhisperTypeAnimation
+	// WhisperTypeDice
+	switch {
+	case len(message.Text) > 0:
+		return ""
+	case len(message.Photo) > 0:
+		return message.Photo[0].FileId
+	case message.Video != nil:
+		return message.Video.FileId
+	case message.Audio != nil:
+		return message.Audio.FileId
+	case message.Voice != nil:
+		return message.Voice.FileId
+	case message.Sticker != nil:
+		return message.Sticker.FileId
+	case message.Document != nil:
+		return message.Document.FileId
+	case message.VideoNote != nil:
+		return message.VideoNote.FileId
+	case message.Animation != nil:
+		return message.Animation.FileId
+	case message.Dice != nil:
+		return message.Dice.Emoji
+	}
+
+	return ""
+}
+
+func isPrivate(msg *gotgbot.Message) bool {
+	return msg.Chat.Type == "private"
+}
+
+func isEveryone(text string) bool {
+	return strings.EqualFold(text, "everyone")
+}
+
 // LoadHandlers helper function will load all handlers for the current plugin.
 func LoadHandlers(d *ext.Dispatcher, t []rune) {
+	createCmd := handlers.NewCommand(createCommand, createHandler)
 	sendWhisperIq := handlers.NewInlineQuery(sendwhisperFilter, sendWhisperResponse)
 	chosenWhisperIq := handlers.NewChosenInlineResult(chosenWhisperFilter, chosenWhisperResponse)
 	showWishperCb := handlers.NewCallback(showWhisperCallBackQuery, showWhisperResponse)
+	cancelWishperCb := handlers.NewCallback(cancelWhisperCallBackQuery, cancelWhisperResponse)
 	whisperGeneratorListener := handlers.NewMessage(generatorListenerFilter, generatorListenerHandler)
 
+	createCmd.Triggers = t
+
+	d.AddHandler(createCmd)
 	d.AddHandler(chosenWhisperIq)
 	d.AddHandler(sendWhisperIq)
 	d.AddHandler(showWishperCb)
+	d.AddHandler(cancelWishperCb)
 	d.AddHandler(whisperGeneratorListener)
 }

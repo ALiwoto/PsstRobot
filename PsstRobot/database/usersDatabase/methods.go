@@ -116,8 +116,12 @@ func (u *UserData) IsSendingData() bool {
 	return u.Status == UserStatusCreating
 }
 
-func (u *UserData) IsChoosingTitle() bool {
-	return u.Status == UserStatusChoosingTitle
+func (u *UserData) IsIdle() bool {
+	return u.Status == UserStatusIdle || u.Status == UserStatusBanned
+}
+
+func (u *UserData) SetToIdle() {
+	u.Status = UserStatusIdle
 }
 
 //---------------------------------------------------------

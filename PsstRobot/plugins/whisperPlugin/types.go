@@ -10,8 +10,18 @@ type MediaGroupWhisper struct {
 	OwnerId   int64
 	Elements  []*MediaGroupElement
 	MediaType whisperDatabase.WhisperType
-	bot       *gotgbot.Bot
-	ctx       *ext.Context
+}
+
+type AdvancedWhisper struct {
+	OwnerId        int64
+	TargetId       int64
+	TargetUsername string
+	Text           string
+	FileId         string
+	bot            *gotgbot.Bot
+	ctx            *ext.Context
+	MediaGroup     *MediaGroupWhisper
+	MediaType      whisperDatabase.WhisperType
 }
 
 type MediaGroupElement struct {

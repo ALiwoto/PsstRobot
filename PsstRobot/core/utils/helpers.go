@@ -28,6 +28,18 @@ func GetName(user *gotgbot.User) string {
 	return ""
 }
 
+func ExtractUsername(text string) string {
+	return ""
+}
+
+func ExtractUserId(text string) int64 {
+	return 0
+}
+
+func ExtractUserIdFromMessage(message *gotgbot.Message) int64 {
+	return 0
+}
+
 func FixName(name string) string {
 	if len(name) > 20 {
 		return name[:20]

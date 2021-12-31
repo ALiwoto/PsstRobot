@@ -1,6 +1,9 @@
 package whisperPlugin
 
 import (
+	"strconv"
+
+	"github.com/ALiwoto/mdparser/mdparser"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/database/whisperDatabase"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 )
@@ -44,6 +47,40 @@ func (m *MediaGroupWhisper) AddElement(message *gotgbot.Message) {
 	m.Elements = append(m.Elements, e)
 }
 
-func (m *MediaGroupWhisper) ToWhisper() *whisperDatabase.Whisper {
+//---------------------------------------------------------
+
+func (a *AdvancedWhisper) ToWhisper() *whisperDatabase.Whisper {
 	return nil
 }
+
+func (a *AdvancedWhisper) IsForEveryone() bool {
+	return a.TargetId == 0 && a.TargetUsername == ""
+}
+
+func (a *AdvancedWhisper) GetTargetAsMd() mdparser.WMarkDown {
+	if a.IsForEveryone() {
+		return mdparser.GetBold("everyone")
+	}
+
+	if a.TargetUsername != "" {
+		return mdparser.GetBold(a.TargetUsername)
+	}
+
+	if a.TargetId > 0 {
+		if a.bot == nil {
+			return mdparser.GetMono(strconv.FormatInt(a.TargetId, 10))
+		}
+		chat, err := a.bot.GetChat(a.TargetId)
+		if err != nil || chat == nil {
+			return mdparser.GetMono(strconv.FormatInt(a.TargetId, 10))
+		}
+
+		return mdparser.GetUserMention(chat.FirstName, chat.Id)
+	}
+
+	/* impossible to reach */
+	return mdparser.GetBold("unknown")
+}
+
+//---------------------------------------------------------
+//---------------------------------------------------------

@@ -4,6 +4,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ALiwoto/StrongStringGo/strongStringGo"
 	"github.com/ALiwoto/mdparser/mdparser"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/logging"
@@ -226,51 +227,146 @@ func chosenWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 
 //---------------------------------------------------------
 
+func cancelWhisperCallBackQuery(cq *gotgbot.CallbackQuery) bool {
+	return cq.Data == CancelWhisperData
+}
+
+func cancelWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
+	message := ctx.EffectiveMessage
+	data := usersDatabase.GetUserData(ctx.EffectiveUser.Id)
+	if data == nil || data.IsIdle() {
+		_, _ = message.Reply(
+			bot,
+			"No active command to cancel. I wasn't doing anything anyway. Zzzzz...",
+			nil,
+		)
+		return ext.EndGroups
+	}
+
+	data.SetToIdle()
+	usersDatabase.UpdateUserData(data)
+
+	md := mdparser.GetNormal("The latest operation has been cancelled. ")
+	md.AppendNormalThis("Anything else I can do for you?")
+	md.AppendNormal("\n\nSend /help for a list of possible commands.")
+
+	_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
+		ParseMode: core.MarkdownV2,
+	})
+
+	return ext.EndGroups
+}
+
 func generatorListenerFilter(msg *gotgbot.Message) bool {
-	return msg.Chat.Type == "private" && usersDatabase.IsUserCreating(msg.From)
+	return isPrivate(msg) && usersDatabase.IsUserCreating(msg.From)
 }
 
 func generatorListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
+	user := ctx.EffectiveUser
+	message := ctx.EffectiveMessage
+	text := strongStringGo.SplitN(message.Text, 2, " ", "\n")
+	invalidInput := func() {
+		md := mdparser.GetNormal("Invalid username or user-id provided.")
+		md.AppendNormalThis("\nTry entering a valid and correct username or user-id.")
+		md.AppendNormalThis("\nYou can also enter \"everyone\" if you want everyone")
+		md.AppendNormalThis("to be able to see the whisper.")
+		_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
+			ParseMode:             core.MarkdownV2,
+			DisableWebPagePreview: true,
+		})
+	}
+	addToMap := func(advanced *AdvancedWhisper) {
+		advancedWhisperMutex.Lock()
+		advancedWhisperMap[advanced.OwnerId] = advanced
+		advancedWhisperMutex.Unlock()
+		md := mdparser.GetNormal("Done! This whisper is going to be sent to ")
+		md = md.AppendThis(advanced.GetTargetAsMd())
+		md.AppendNormalThis(". \nPlease send the content to be whispered. ")
+		md.AppendNormalThis("It can be text, photo, or any other media.")
+		_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
+			ParseMode:             core.MarkdownV2,
+			DisableWebPagePreview: true,
+			ReplyMarkup:           titleChosenMarkup,
+		})
+	}
+
+	advancedWhisperMutex.Lock()
+	advanced := advancedWhisperMap[user.Id]
+	advancedWhisperMutex.Unlock()
+
+	if advanced == nil {
+		if len(text) < 2 {
+			invalidInput()
+			return ext.EndGroups
+		}
+		// user still has to enter target's username or user-id.
+		advanced = &AdvancedWhisper{
+			bot:     bot,
+			ctx:     ctx,
+			OwnerId: user.Id,
+		}
+
+		if isEveryone(message.Text) {
+			addToMap(advanced)
+			return ext.EndGroups
+		}
+
+		username := utils.ExtractUsername(message.Text)
+		if username != "" {
+			advanced.TargetUsername = username
+		} else {
+			advanced.TargetId = utils.ExtractUserIdFromMessage(message)
+			if advanced.TargetId <= 0 {
+				invalidInput()
+				return ext.EndGroups
+			}
+		}
+
+		addToMap(advanced)
+		return ext.EndGroups
+	}
+
 	if ctx.Message.MediaGroupId != "" {
 		// user wants to send a media group whisper.
-		return mediaGroupListenerHandler(bot, ctx)
+		return mediaGroupListenerHandler(advanced, ctx)
 	}
+
+	advanced.MediaType = extractMediaType(advanced.ctx.Message)
+	if advanced.MediaType == whisperDatabase.WhisperTypePlainText {
+		advanced.Text = message.Text
+	} else {
+		advanced.Text = message.Caption
+	}
+	advanced.FileId = extractFileId(message)
+	addToMap(advanced)
 
 	//message := ctx.Message
 	return ext.ContinueGroups
 }
 
-func mediaGroupListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
-	user := ctx.EffectiveUser
-	MediaGroupMutex.Lock()
-	w := MediaGroupWhisperMap[user.Id]
-	MediaGroupMutex.Unlock()
-	if w == nil {
-		w = &MediaGroupWhisper{
+func mediaGroupListenerHandler(advanced *AdvancedWhisper, ctx *ext.Context) error {
+	user := advanced.ctx.EffectiveUser
+	if advanced.MediaGroup == nil {
+		advanced.MediaGroup = &MediaGroupWhisper{
 			OwnerId:   user.Id,
-			MediaType: extractMediaType(ctx.Message),
-			ctx:       ctx,
-			bot:       bot,
+			MediaType: extractMediaType(advanced.ctx.Message),
 		}
-		MediaGroupMutex.Lock()
-		MediaGroupWhisperMap[user.Id] = w
-		MediaGroupMutex.Unlock()
-		go sendMediaGroupResponse(w)
+		go sendAdvancedWhisperResponse(advanced)
 	}
 
-	w.AddElement(ctx.Message)
+	advanced.MediaGroup.AddElement(advanced.ctx.Message)
 
 	return ext.ContinueGroups
 }
 
-func sendMediaGroupResponse(w *MediaGroupWhisper) {
+func sendAdvancedWhisperResponse(w *AdvancedWhisper) {
 	// sleep for at least 2 seconds, so bot can receive all media group messages
 	// from telegram.
 	time.Sleep(time.Second * 2)
 
-	MediaGroupMutex.Lock()
-	delete(MediaGroupWhisperMap, w.OwnerId)
-	MediaGroupMutex.Unlock()
+	advancedWhisperMutex.Lock()
+	delete(advancedWhisperMap, w.OwnerId)
+	advancedWhisperMutex.Unlock()
 
 	message := w.ctx.Message
 	whisper := w.ToWhisper()
@@ -289,6 +385,32 @@ func sendMediaGroupResponse(w *MediaGroupWhisper) {
 		DisableWebPagePreview:    true,
 		ReplyMarkup:              markup,
 	})
+}
+
+//---------------------------------------------------------
+
+func createHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
+	user := ctx.EffectiveUser
+	message := ctx.EffectiveMessage
+
+	if usersDatabase.IsUserBanned(user) {
+		return ext.EndGroups
+	}
+
+	usersDatabase.ChangeUserStatus(user, usersDatabase.UserStatusCreating)
+
+	md := mdparser.GetNormal("Preparing an advanced whisper. To cancel, type /cancel.")
+	md.AppendNormalThis("\n\nSend me the target user's username or id.")
+	md.AppendNormalThis("\nYou can also send \"everyone\" to send a whisper to everyone")
+	md.AppendNormalThis(" in a chat.")
+
+	_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
+		ParseMode:                core.MarkdownV2,
+		AllowSendingWithoutReply: true,
+		DisableWebPagePreview:    true,
+	})
+
+	return ext.EndGroups
 }
 
 //---------------------------------------------------------

@@ -3,10 +3,15 @@ package whisperPlugin
 const ShellToUse = "bash"
 
 const (
-	ShowWhisperData = "wh"
-	sepChar         = "_"
+	ShowWhisperData   = "wh"
+	CancelWhisperData = "cancel"
+	sepChar           = "_"
 )
 
 const (
 	MaxQueryLength = 253
+)
+
+const (
+	createCommand = "create"
 )
