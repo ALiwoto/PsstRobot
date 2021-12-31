@@ -86,17 +86,7 @@ func sendWhisperText(bot *gotgbot.Bot, ctx *ext.Context) error {
 	user := ctx.EffectiveUser
 	uniqueId := utils.GetWhisperUniqueId(message)
 	w := whisperDatabase.GetWhisper(uniqueId)
-	if w == nil {
-		// TODO:
-		// display original welcome message which is on
-		// normal /start command :0
-		return normalStartHandler(bot, ctx)
-	}
-
-	if !w.CanRead(user) {
-		// TODO:
-		// display original welcome message which is on
-		// normal /start command :0
+	if w == nil || !w.CanRead(user) {
 		return normalStartHandler(bot, ctx)
 	}
 
@@ -122,13 +112,65 @@ func sendWhisperText(bot *gotgbot.Bot, ctx *ext.Context) error {
 
 	text := mdparser.GetBold("🔹This whisper has been sent from ").AppendThis(senderMd)
 	text.AppendBoldThis(" to ").AppendThis(targetMd).AppendBoldThis(":\n\n")
-	text.AppendNormalThis(w.Text)
+	if w.Type == whisperDatabase.WhisperTypePlainText {
+		text.AppendNormalThis(w.Text)
+	}
 
 	_, _ = message.Reply(bot, text.ToString(), &gotgbot.SendMessageOpts{
 		ParseMode:                core.MarkdownV2,
 		DisableWebPagePreview:    true,
 		AllowSendingWithoutReply: true,
 	})
+
+	if w.Type != whisperDatabase.WhisperTypePlainText {
+		switch w.Type {
+		//WhisperTypePhoto
+		//WhisperTypeVideo
+		//WhisperTypeAudio
+		//WhisperTypeVoice
+		//WhisperTypeSticker
+		//WhisperTypeDocument
+		//WhisperTypeVideoNote
+		//WhisperTypeAnimation
+		//WhisperTypeDice
+		case whisperDatabase.WhisperTypePhoto:
+			_, _ = bot.SendPhoto(user.Id, w.FileId, &gotgbot.SendPhotoOpts{
+				Caption: w.Text,
+			})
+		case whisperDatabase.WhisperTypeVideo:
+			_, _ = bot.SendVideo(user.Id, w.FileId, &gotgbot.SendVideoOpts{
+				Caption: w.Text,
+			})
+		case whisperDatabase.WhisperTypeAudio:
+			_, _ = bot.SendAudio(user.Id, w.FileId, &gotgbot.SendAudioOpts{
+				Caption: w.Text,
+			})
+		case whisperDatabase.WhisperTypeVoice:
+			_, _ = bot.SendVoice(user.Id, w.FileId, &gotgbot.SendVoiceOpts{
+				Caption: w.Text,
+			})
+		case whisperDatabase.WhisperTypeSticker:
+			_, _ = bot.SendSticker(user.Id, w.FileId, &gotgbot.SendStickerOpts{
+				//Caption: w.Text,
+			})
+		case whisperDatabase.WhisperTypeDocument:
+			_, _ = bot.SendDocument(user.Id, w.FileId, &gotgbot.SendDocumentOpts{
+				Caption: w.Text,
+			})
+		case whisperDatabase.WhisperTypeVideoNote:
+			_, _ = bot.SendVideoNote(user.Id, w.FileId, &gotgbot.SendVideoNoteOpts{
+				//Caption: w.Text,
+			})
+		case whisperDatabase.WhisperTypeAnimation:
+			_, _ = bot.SendAnimation(user.Id, w.FileId, &gotgbot.SendAnimationOpts{
+				Caption: w.Text,
+			})
+		case whisperDatabase.WhisperTypeDice:
+			_, _ = bot.SendDice(user.Id, &gotgbot.SendDiceOpts{
+				Emoji: w.Text,
+			})
+		}
+	}
 
 	if w.ShouldMarkAsRead(user) && usersDatabase.HasPrivacy(user) {
 		md := mdparser.GetUserMention(user.FirstName, user.Id)
