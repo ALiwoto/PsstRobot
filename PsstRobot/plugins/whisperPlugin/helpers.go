@@ -146,11 +146,11 @@ func LoadHandlers(d *ext.Dispatcher, t []rune) {
 	cancelCmd.Triggers = t
 	createCmd.Triggers = t
 
-	d.AddHandler(createCmd)
+	d.AddHandler(cancelCmd)
 	d.AddHandler(chosenWhisperIq)
 	d.AddHandler(sendWhisperIq)
 	d.AddHandler(showWishperCb)
 	d.AddHandler(cancelWishperCb)
 	d.AddHandler(whisperGeneratorListener)
-	d.AddHandler(cancelCmd)
+	d.AddHandler(createCmd)
 }
