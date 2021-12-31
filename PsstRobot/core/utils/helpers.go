@@ -50,7 +50,7 @@ func ExtractUserIdFromMessage(message *gotgbot.Message, alt ...string) int64 {
 	}
 
 	if len(alt) < 1 {
-		return 0
+		return ExtractUserId(message.Text)
 	}
 
 	var id int64

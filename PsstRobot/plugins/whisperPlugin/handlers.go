@@ -299,10 +299,6 @@ func generatorListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 	advancedWhisperMutex.Unlock()
 
 	if advanced == nil {
-		if len(text) < 2 {
-			invalidInput()
-			return ext.EndGroups
-		}
 		// user still has to enter target's username or user-id.
 		advanced = &AdvancedWhisper{
 			bot:     bot,
@@ -310,16 +306,16 @@ func generatorListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 			OwnerId: user.Id,
 		}
 
-		if isEveryone(text[1]) {
+		if isEveryone(message.Text) {
 			addToMap(advanced)
 			return ext.EndGroups
 		}
 
-		username := utils.ExtractUsername(text[1])
+		username := utils.ExtractUsername(message.Text)
 		if username != "" {
 			advanced.TargetUsername = username
 		} else {
-			advanced.TargetId = utils.ExtractUserIdFromMessage(message, text[1])
+			advanced.TargetId = utils.ExtractUserIdFromMessage(message)
 			if advanced.TargetId <= 0 {
 				invalidInput()
 				return ext.EndGroups
