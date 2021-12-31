@@ -107,7 +107,12 @@ func sendWhisperText(bot *gotgbot.Bot, ctx *ext.Context) error {
 			targetMd = mdparser.GetMono(strconv.FormatInt(w.Recipient, 10))
 		}
 	} else {
-		targetMd = mdparser.GetNormal(w.RecipientUsername)
+		if w.RecipientUsername == "" {
+			// everyone
+			targetMd = mdparser.GetBold("everyone")
+		} else {
+			targetMd = mdparser.GetNormal(w.RecipientUsername)
+		}
 	}
 
 	text := mdparser.GetBold("🔹This whisper has been sent from ").AppendThis(senderMd)
