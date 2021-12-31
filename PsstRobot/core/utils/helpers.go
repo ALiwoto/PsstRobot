@@ -29,7 +29,7 @@ func GetName(user *gotgbot.User) string {
 }
 
 func ExtractUsername(text string) string {
-	if text[0] == '@' {
+	if len(text) > 0 && text[0] == '@' {
 		return text
 	}
 	return ""
