@@ -114,7 +114,7 @@ func sendWhisperText(bot *gotgbot.Bot, ctx *ext.Context) error {
 		if err == nil && targetInfo != nil {
 			targetMd = mdparser.GetUserMention(targetInfo.FirstName, targetInfo.Id)
 		} else {
-			targetMd = mdparser.GetMono(strconv.FormatInt(targetInfo.Id, 10))
+			targetMd = mdparser.GetMono(strconv.FormatInt(w.Recipient, 10))
 		}
 	} else {
 		targetMd = mdparser.GetNormal(w.RecipientUsername)
