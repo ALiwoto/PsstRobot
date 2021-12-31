@@ -290,6 +290,10 @@ func generatorListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 		})
 	}
 
+	if text[0] == CancelWhisperData {
+		return cancelWhisperResponse(bot, ctx)
+	}
+
 	advancedWhisperMutex.Lock()
 	advanced := advancedWhisperMap[user.Id]
 	advancedWhisperMutex.Unlock()
