@@ -77,11 +77,14 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 			if !privacy {
 				md := mdparser.GetUserMention(user.FirstName, user.Id)
 				md.AppendNormalThis(" read the whisper")
-				_, _ = bot.EditMessageText(md.ToString(), &gotgbot.EditMessageTextOpts{
+				_, ok, _ := bot.EditMessageText(md.ToString(), &gotgbot.EditMessageTextOpts{
 					InlineMessageId:       query.InlineMessageId,
 					ParseMode:             core.MarkdownV2,
 					DisableWebPagePreview: true,
 				})
+				if !ok {
+					return ext.EndGroups
+				}
 				usersDatabase.SaveInHistory(w.Sender, user)
 			}
 
@@ -260,7 +263,7 @@ func chosenWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		CallbackData: ShowWhisperData + sepChar + w.UniqueId,
 	})
 
-	_, _ = bot.EditMessageText(w.ParseAsMd(bot).ToString(), &gotgbot.EditMessageTextOpts{
+	_, _, _ = bot.EditMessageText(w.ParseAsMd(bot).ToString(), &gotgbot.EditMessageTextOpts{
 		ReplyMarkup:     *markup,
 		ParseMode:       core.MarkdownV2,
 		InlineMessageId: result.InlineMessageId,
@@ -324,10 +327,10 @@ func generatorListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 		advancedWhisperMutex.Lock()
 		advancedWhisperMap[advanced.OwnerId] = advanced
 		advancedWhisperMutex.Unlock()
-		md := mdparser.GetNormal("Done! This whisper is going to be sent to ")
+		md := mdparser.GetNormal("This whisper is going to be sent to ")
 		md = md.AppendThis(advanced.GetTargetAsMd())
 		md.AppendNormalThis(". \nPlease send the content to be whispered. ")
-		md.AppendNormalThis("It can be text, photo, or any other media.")
+		md.AppendNormalThis("It can be text, photo, or any other type of media.")
 		_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
 			ParseMode:             core.MarkdownV2,
 			DisableWebPagePreview: true,

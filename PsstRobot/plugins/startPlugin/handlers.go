@@ -187,7 +187,7 @@ func sendWhisperText(bot *gotgbot.Bot, ctx *ext.Context) error {
 	if w.ShouldMarkAsRead(user) && !usersDatabase.HasPrivacy(user) {
 		md := mdparser.GetUserMention(user.FirstName, user.Id)
 		md.AppendNormalThis(" read the whisper")
-		_, _ = bot.EditMessageText(md.ToString(), &gotgbot.EditMessageTextOpts{
+		_, _, _ = bot.EditMessageText(md.ToString(), &gotgbot.EditMessageTextOpts{
 			InlineMessageId:       w.InlineMessageId,
 			ParseMode:             core.MarkdownV2,
 			DisableWebPagePreview: true,
