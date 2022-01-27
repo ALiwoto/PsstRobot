@@ -202,10 +202,11 @@ func SaveInHistory(ownerId int64, target *gotgbot.User) {
 	mutex := wv.Core.SessionCollection.GetMutex(index)
 
 	mutex.Lock()
-	tx := session.Begin()
 	if removed != nil {
-		tx.Delete(removed)
+		session.Delete(removed)
 	}
+
+	tx := session.Begin()
 	tx.Create(history)
 	tx.Commit()
 	mutex.Unlock()

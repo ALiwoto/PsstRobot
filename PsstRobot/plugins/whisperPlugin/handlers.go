@@ -85,6 +85,7 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 				if !ok {
 					return ext.EndGroups
 				}
+
 				usersDatabase.SaveInHistory(w.Sender, user)
 			}
 
