@@ -14,7 +14,8 @@ func (m *historyManager) GetUserHistory(ownerId int64) *HistoryCollection {
 	m.historyMutex.Lock()
 	h := m.historyMap[ownerId]
 	m.historyMutex.Unlock()
-	if len(h.History) > wotoValues.MaximumHistory {
+
+	if h != nil && len(h.History) > wotoValues.MaximumHistory {
 		h.FixLength()
 	}
 
