@@ -76,7 +76,7 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		if w.ShouldMarkAsRead(user) {
 			if !privacy {
 				md := mdparser.GetUserMention(user.FirstName, user.Id)
-				md.AppendNormalThis(" read the whisper")
+				md.Normal(" read the whisper")
 				_, ok, _ := bot.EditMessageText(md.ToString(), &gotgbot.EditMessageTextOpts{
 					InlineMessageId:       query.InlineMessageId,
 					ParseMode:             core.MarkdownV2,
@@ -296,8 +296,8 @@ func cancelWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	usersDatabase.UpdateUserData(data)
 
 	md := mdparser.GetNormal("The latest operation has been cancelled. ")
-	md.AppendNormalThis("Anything else I can do for you?")
-	md.AppendNormalThis("\n\nSend /help for a list of possible commands.")
+	md.Normal("Anything else I can do for you?")
+	md.Normal("\n\nSend /help for a list of possible commands.")
 
 	_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
 		ParseMode: core.MarkdownV2,
@@ -316,9 +316,9 @@ func generatorListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 	text := ws.SplitN(message.Text, 2, " ", "\n")
 	invalidInput := func() {
 		md := mdparser.GetNormal("Invalid username or user-id provided.")
-		md.AppendNormalThis("\nTry entering a valid and correct username or user-id.")
-		md.AppendNormalThis("\nYou can also enter \"everyone\" if you want everyone")
-		md.AppendNormalThis("to be able to see the whisper.")
+		md.Normal("\nTry entering a valid and correct username or user-id.")
+		md.Normal("\nYou can also enter \"everyone\" if you want everyone")
+		md.Normal("to be able to see the whisper.")
 		_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
 			ParseMode:             core.MarkdownV2,
 			DisableWebPagePreview: true,
@@ -330,8 +330,8 @@ func generatorListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 		advancedWhisperMutex.Unlock()
 		md := mdparser.GetNormal("This whisper is going to be sent to ")
 		md = md.AppendThis(advanced.GetTargetAsMd())
-		md.AppendNormalThis(". \nPlease send the content to be whispered. ")
-		md.AppendNormalThis("It can be text, photo, or any other type of media.")
+		md.Normal(". \nPlease send the content to be whispered. ")
+		md.Normal("It can be text, photo, or any other type of media.")
 		_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
 			ParseMode:             core.MarkdownV2,
 			DisableWebPagePreview: true,
@@ -434,7 +434,7 @@ func sendAdvancedWhisperResponse(w *AdvancedWhisper) {
 	usersDatabase.ChangeUserStatus(w.ctx.EffectiveUser, usersDatabase.UserStatusIdle)
 
 	md := mdparser.GetNormal("Done! The whisper is ready to be sent.")
-	md.AppendNormalThis(". \nClick the button below to share it.")
+	md.Normal(". \nClick the button below to share it.")
 
 	_, _ = message.Reply(w.bot, md.ToString(), &gotgbot.SendMessageOpts{
 		ParseMode:                core.MarkdownV2,
@@ -457,9 +457,9 @@ func createHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 	usersDatabase.ChangeUserStatus(user, usersDatabase.UserStatusCreating)
 
 	md := mdparser.GetNormal("Preparing an advanced whisper. To cancel, type /cancel.")
-	md.AppendNormalThis("\n\nSend me the target user's username or id.")
-	md.AppendNormalThis("\nYou can also send \"everyone\" to send a whisper to everyone")
-	md.AppendNormalThis(" in a chat.")
+	md.Normal("\n\nSend me the target user's username or id.")
+	md.Normal("\nYou can also send \"everyone\" to send a whisper to everyone")
+	md.Normal(" in a chat.")
 
 	_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
 		ParseMode:                core.MarkdownV2,

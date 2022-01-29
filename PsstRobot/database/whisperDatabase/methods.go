@@ -54,10 +54,10 @@ func (w *Whisper) ParseAsMd(bot *gotgbot.Bot) mdparser.WMarkDown {
 
 	if rec != nil {
 		md.AppendThis(rec)
-		md.AppendNormalThis(".\nOnly they can read the message.")
+		md.Normal(".\nOnly they can read the message.")
 	} else {
-		md.AppendNormalThis("anyone.")
-		md.AppendNormalThis("\nAnyone can read it!")
+		md.Normal("anyone.")
+		md.Normal("\nAnyone can read it!")
 	}
 
 	return md

@@ -7,6 +7,8 @@ github.com/ALiwoto/mdparser v1.0.7 h1:tIorE6pZfLTLlmyaHEWa2bG9UpZzGYgTPcSxDshcO8
 github.com/ALiwoto/mdparser v1.0.7/go.mod h1:93EnoGxVukI17RVlKi/yW0UX7mtMaDTHbheZsishw7c=
 github.com/ALiwoto/mdparser v1.0.8 h1:mhLyskgWEl5+iZ0waWM5putt1OJKIJXtcBfuVYx/3qs=
 github.com/ALiwoto/mdparser v1.0.8/go.mod h1:oKSQ8y6XxAX5Z1CWX7M9pRPNyGINi0fGGvu4GIJTebw=
+github.com/ALiwoto/mdparser v1.0.9 h1:8YLJsC3LWZvkYsJiWuaHBzMZxi1H2gXmIp3HimYJADM=
+github.com/ALiwoto/mdparser v1.0.9/go.mod h1:oKSQ8y6XxAX5Z1CWX7M9pRPNyGINi0fGGvu4GIJTebw=
 github.com/PaulSonOfLars/gotgbot/v2 v2.0.0-rc.5 h1:GLCx93Np2zSj+cb9go0uLcYxgSS4gqTYLfv/mC1VERE=
 github.com/PaulSonOfLars/gotgbot/v2 v2.0.0-rc.5/go.mod h1:r815fYWTudnU9JhtsJAxUtuV7QrSgKpChJkfTSMFpfg=
 github.com/benbjohnson/clock v1.1.0 h1:Q92kusRqC1XV2MjkWETPvjJVqKetz1OzxZB7mHJLju8=

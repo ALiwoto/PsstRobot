@@ -47,7 +47,7 @@ func privacyHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 		}
 	} else {
 		md = mdparser.GetBold("· Usage:")
-		md.AppendNormalThis("\n    /privacy [on|off]\n\n" +
+		md.Normal("\n    /privacy [on|off]\n\n" +
 			"Currently privacy mode is " + preString() +
 			" for every whisper you try to read.",
 		)
@@ -66,12 +66,12 @@ func normalStartHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 	message := ctx.EffectiveMessage
 
 	md := mdparser.GetNormal("Hello ")
-	md.AppendMentionThis(user.FirstName, user.Id)
-	md.AppendNormalThis("!\nThis bot allows you to send whisper messages")
-	md.AppendNormalThis(" to other users.\n")
-	md.AppendNormalThis("You don't need to add this bot in any group,")
-	md.AppendNormalThis(" it works in inline mode only and can send advanced")
-	md.AppendNormalThis(" whispers (longs whispers and whispers with media).")
+	md.Mention(user.FirstName, user.Id)
+	md.Normal("!\nThis bot allows you to send whisper messages")
+	md.Normal(" to other users.\n")
+	md.Normal("You don't need to add this bot in any group,")
+	md.Normal(" it works in inline mode only and can send advanced")
+	md.Normal(" whispers (longs whispers and whispers with media).")
 
 	_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
 		ParseMode:             core.MarkdownV2,
@@ -116,11 +116,11 @@ func sendWhisperText(bot *gotgbot.Bot, ctx *ext.Context) error {
 	}
 
 	text := mdparser.GetBold("🔹This whisper has been sent from ").AppendThis(senderMd)
-	text.AppendBoldThis(" to ").AppendThis(targetMd)
-	text.AppendBoldThis(" at ").AppendMonoThis(w.CreatedAt.UTC().Format("2006-01-02 15:04:05"))
-	text.AppendBoldThis(":\n\n")
+	text.Bold(" to ").AppendThis(targetMd)
+	text.Bold(" at ").Mono(w.CreatedAt.UTC().Format("2006-01-02 15:04:05"))
+	text.Bold(":\n\n")
 	if w.Type == whisperDatabase.WhisperTypePlainText {
-		text.AppendNormalThis(w.Text)
+		text.Normal(w.Text)
 	}
 
 	_, _ = message.Reply(bot, text.ToString(), &gotgbot.SendMessageOpts{
@@ -186,7 +186,7 @@ func sendWhisperText(bot *gotgbot.Bot, ctx *ext.Context) error {
 
 	if w.ShouldMarkAsRead(user) && !usersDatabase.HasPrivacy(user) {
 		md := mdparser.GetUserMention(user.FirstName, user.Id)
-		md.AppendNormalThis(" read the whisper")
+		md.Normal(" read the whisper")
 		_, _, _ = bot.EditMessageText(md.ToString(), &gotgbot.EditMessageTextOpts{
 			InlineMessageId:       w.InlineMessageId,
 			ParseMode:             core.MarkdownV2,

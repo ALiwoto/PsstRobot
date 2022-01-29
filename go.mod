@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/ALiwoto/StrongStringGo v1.0.10
-	github.com/ALiwoto/mdparser v1.0.8
+	github.com/ALiwoto/mdparser v1.0.9
 	github.com/PaulSonOfLars/gotgbot/v2 v2.0.0-rc.5
 	go.uber.org/zap v1.20.0
 	gorm.io/driver/sqlite v1.2.6
