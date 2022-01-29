@@ -3,6 +3,7 @@ package usersDatabase
 import (
 	"time"
 
+	ws "github.com/ALiwoto/StrongStringGo/strongStringGo"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/utils"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/wotoConfig"
 	wv "github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/wotoValues"
@@ -230,7 +231,7 @@ func getUserHistoryFromDatabase(userId int64) *HistoryCollection {
 }
 
 func uIdForUserHistory(ownerId, userId int64) string {
-	return utils.ToBase10(ownerId) + "^" + utils.ToBase10(userId)
+	return ws.ToBase10(ownerId) + "^" + ws.ToBase10(userId)
 }
 
 func checkUsersData() {

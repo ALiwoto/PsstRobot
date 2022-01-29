@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ALiwoto/StrongStringGo/strongStringGo"
+	ws "github.com/ALiwoto/StrongStringGo/strongStringGo"
 	"github.com/ALiwoto/mdparser/mdparser"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core"
 	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/logging"
@@ -206,13 +206,13 @@ func sendWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	if isAnyone {
 		history := usersDatabase.GetUserHistory(user.Id)
 		if history != nil && !history.IsEmpty() {
-			timeStampNow := utils.ToBase32(time.Now().Unix())
+			timeStampNow := ws.ToBase32(time.Now().Unix())
 			var resultId string
 			for _, current := range history.History {
 				// time::user::target
 				resultId = timeStampNow
-				resultId += wv.ResultIdentifier + utils.ToBase32(current.OwnerId)
-				resultId += wv.ResultIdentifier + utils.ToBase10(current.TargetId)
+				resultId += wv.ResultIdentifier + ws.ToBase32(current.OwnerId)
+				resultId += wv.ResultIdentifier + ws.ToBase10(current.TargetId)
 				title = "📩 A whisper message to " + current.TargetName
 				description = "Only " + current.TargetName + " can open this whisper."
 				results = append(results, &gotgbot.InlineQueryResultArticle{
@@ -313,7 +313,7 @@ func generatorListenerFilter(msg *gotgbot.Message) bool {
 func generatorListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 	user := ctx.EffectiveUser
 	message := ctx.EffectiveMessage
-	text := strongStringGo.SplitN(message.Text, 2, " ", "\n")
+	text := ws.SplitN(message.Text, 2, " ", "\n")
 	invalidInput := func() {
 		md := mdparser.GetNormal("Invalid username or user-id provided.")
 		md.AppendNormalThis("\nTry entering a valid and correct username or user-id.")

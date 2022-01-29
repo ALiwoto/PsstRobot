@@ -92,14 +92,6 @@ func GetDBIndex(id int64) int {
 	return int(strconv.FormatInt(id, 10)[0] - '0')
 }
 
-func ToBase32(value int64) string {
-	return strconv.FormatInt(value, 32)
-}
-
-func ToBase10(value int64) string {
-	return strconv.FormatInt(value, 10)
-}
-
 // UnpackInlineMessageId returns unpacked inline message id result.
 // all credits goes to https:/github.com/PaulSonOfLars for writing the logic.
 // the original source code is here:
