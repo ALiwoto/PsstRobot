@@ -11,6 +11,8 @@ github.com/ALiwoto/mdparser v1.0.9 h1:8YLJsC3LWZvkYsJiWuaHBzMZxi1H2gXmIp3HimYJAD
 github.com/ALiwoto/mdparser v1.0.9/go.mod h1:oKSQ8y6XxAX5Z1CWX7M9pRPNyGINi0fGGvu4GIJTebw=
 github.com/ALiwoto/mdparser v1.0.10 h1:fV1YePSwHNCqEboFDvaTrHqTiUazTWVKBER03HUAAIc=
 github.com/ALiwoto/mdparser v1.0.10/go.mod h1:oKSQ8y6XxAX5Z1CWX7M9pRPNyGINi0fGGvu4GIJTebw=
+github.com/ALiwoto/mdparser v1.0.11 h1:qQq8e3Bco60ziiMFhq1F8QLaFhnB+pBtkg6dvdcwDzg=
+github.com/ALiwoto/mdparser v1.0.11/go.mod h1:aOfQn8/SEPOFdMRhhE0oaFomYgQLJ+8QUG0EFvWUGBg=
 github.com/PaulSonOfLars/gotgbot/v2 v2.0.0-rc.5 h1:GLCx93Np2zSj+cb9go0uLcYxgSS4gqTYLfv/mC1VERE=
 github.com/PaulSonOfLars/gotgbot/v2 v2.0.0-rc.5/go.mod h1:r815fYWTudnU9JhtsJAxUtuV7QrSgKpChJkfTSMFpfg=
 github.com/PaulSonOfLars/gotgbot/v2 v2.0.0-rc.6 h1:MoFt/Ff7+IX9Qq/w67xHV3UFSyhbctjHhd/pq+ujQr0=
