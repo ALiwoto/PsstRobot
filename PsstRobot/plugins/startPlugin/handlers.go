@@ -71,7 +71,7 @@ func normalStartHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 	md.Normal(" to other users.\n")
 	md.Normal("You don't need to add this bot in any group,")
 	md.Normal(" it works in inline mode only and can send advanced")
-	md.Normal(" whispers (longs whispers and whispers with media).")
+	md.Normal(" whispers (long whispers and whispers with media).")
 
 	_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
 		ParseMode:             core.MarkdownV2,

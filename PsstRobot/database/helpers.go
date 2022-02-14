@@ -51,6 +51,7 @@ func StartDB() error {
 	err = wv.Core.AutoMigrateDB(
 		whisperDatabase.ModelWhisper,
 		usersDatabase.ModelUserHistory,
+		usersDatabase.ModelUserData,
 	)
 	if err != nil {
 		return err

@@ -65,8 +65,8 @@ func ExtractUserIdFromMessage(message *gotgbot.Message, alt ...string) int64 {
 }
 
 func FixName(name string) string {
-	if len(name) > 20 {
-		return name[:20]
+	if len(name) > 34 {
+		return name[:34]
 	}
 
 	return name
