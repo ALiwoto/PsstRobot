@@ -1,13 +1,14 @@
 *.dll
 *.pdb
 *.mdb
+# linux binary files
 botBinary
+PsstRobot
 .env
 .docker_build/
 bin/
 *.exe
 vendor/
-sibylBinary
 *.old.go
 woto_files/
 tmp_files/
