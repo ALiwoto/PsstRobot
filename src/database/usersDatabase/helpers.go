@@ -4,9 +4,9 @@ import (
 	"time"
 
 	ws "github.com/ALiwoto/StrongStringGo/strongStringGo"
-	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/utils"
-	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/wotoConfig"
-	wv "github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/wotoValues"
+	"github.com/AnimeKaizoku/PsstRobot/src/core/utils"
+	"github.com/AnimeKaizoku/PsstRobot/src/core/wotoConfig"
+	wv "github.com/AnimeKaizoku/PsstRobot/src/core/wotoValues"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 )
 

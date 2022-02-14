@@ -1,7 +1,7 @@
 package whisperPlugin
 
 import (
-	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/database/whisperDatabase"
+	"github.com/AnimeKaizoku/PsstRobot/src/database/whisperDatabase"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
 )

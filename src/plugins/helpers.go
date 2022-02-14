@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/logging"
-	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/wotoConfig"
+	"github.com/AnimeKaizoku/PsstRobot/src/core/logging"
+	"github.com/AnimeKaizoku/PsstRobot/src/core/wotoConfig"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
 )

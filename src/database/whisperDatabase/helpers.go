@@ -4,8 +4,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/wotoConfig"
-	wv "github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/wotoValues"
+	"github.com/AnimeKaizoku/PsstRobot/src/core/wotoConfig"
+	wv "github.com/AnimeKaizoku/PsstRobot/src/core/wotoValues"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 )
 

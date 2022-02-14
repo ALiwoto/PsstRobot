@@ -3,9 +3,9 @@ package whisperPlugin
 import (
 	"strings"
 
-	wv "github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/wotoValues"
-	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/database/usersDatabase"
-	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/database/whisperDatabase"
+	wv "github.com/AnimeKaizoku/PsstRobot/src/core/wotoValues"
+	"github.com/AnimeKaizoku/PsstRobot/src/database/usersDatabase"
+	"github.com/AnimeKaizoku/PsstRobot/src/database/whisperDatabase"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext/handlers"

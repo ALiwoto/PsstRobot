@@ -3,10 +3,10 @@ package main
 import (
 	"log"
 
-	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/logging"
-	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/wotoConfig"
-	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/database"
-	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/plugins"
+	"github.com/AnimeKaizoku/PsstRobot/src/core/logging"
+	"github.com/AnimeKaizoku/PsstRobot/src/core/wotoConfig"
+	"github.com/AnimeKaizoku/PsstRobot/src/database"
+	"github.com/AnimeKaizoku/PsstRobot/src/plugins"
 )
 
 func main() {

@@ -5,10 +5,10 @@ import (
 
 	"github.com/ALiwoto/StrongStringGo/strongStringGo"
 	"github.com/ALiwoto/mdparser/mdparser"
-	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core"
-	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/core/utils"
-	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/database/usersDatabase"
-	"github.com/AnimeKaizoku/PsstRobot/PsstRobot/database/whisperDatabase"
+	"github.com/AnimeKaizoku/PsstRobot/src/core"
+	"github.com/AnimeKaizoku/PsstRobot/src/core/utils"
+	"github.com/AnimeKaizoku/PsstRobot/src/database/usersDatabase"
+	"github.com/AnimeKaizoku/PsstRobot/src/database/whisperDatabase"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
 )
