@@ -1,21 +1,18 @@
 package usersDatabase
 
 import (
-	"sync"
-	"time"
+	ws "github.com/ALiwoto/StrongStringGo/strongStringGo"
 )
 
 type UserStatus int
 
 type historyManager struct {
-	historyMap   map[int64]*HistoryCollection
-	historyMutex *sync.Mutex
+	historyMap *ws.SafeEMap[int64, HistoryCollection]
 }
 
 type HistoryCollection struct {
-	History    []UserHistoryValue
-	OwnerId    int64
-	cachedTime time.Time
+	History []UserHistoryValue
+	OwnerId int64
 }
 
 type UserHistoryValue struct {
@@ -29,5 +26,4 @@ type UserData struct {
 	UserId      int64      `json:"user_id" gorm:"primaryKey"`
 	Status      UserStatus `json:"status"`
 	PrivacyMode bool       `json:"privacy_mode"`
-	cachedTime  time.Time  `json:"-" gorm:"-" sql:"-"`
 }

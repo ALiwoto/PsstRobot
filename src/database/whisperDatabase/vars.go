@@ -1,6 +1,8 @@
 package whisperDatabase
 
-import "sync"
+import (
+	"github.com/ALiwoto/StrongStringGo/strongStringGo"
+)
 
 // database models
 var (
@@ -10,6 +12,5 @@ var (
 // caching
 var (
 	// whispersMap is a map with unique id as key and whisper as value.
-	whispersMap   = make(map[string]*Whisper)
-	whispersMutex = &sync.Mutex{}
+	whispersMap = strongStringGo.NewSafeEMap[string, Whisper]()
 )

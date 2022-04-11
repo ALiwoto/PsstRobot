@@ -15,7 +15,6 @@ func LoadAllWhispers() {
 
 	var mutex *sync.Mutex
 
-	whispersMutex.Lock()
 	for i, current := range allSessions {
 		if current == nil {
 			continue
@@ -27,35 +26,30 @@ func LoadAllWhispers() {
 		current.Find(&whispers)
 
 		for _, whisper := range whispers {
-			whispersMap[whisper.UniqueId] = &whisper
+			whispersMap.Add(whisper.UniqueId, &whisper)
 		}
 
 		mutex.Unlock()
 	}
-	whispersMutex.Unlock()
 
 	go checkWhispers()
 }
 
 func AddWhisper(w *Whisper) {
-	s := wv.Core.SessionCollection.GetSession(w.GetDBIndex())
-	mutex := wv.Core.SessionCollection.GetMutex(w.GetDBIndex())
+	index := w.GetDBIndex()
+	s := wv.Core.SessionCollection.GetSession(index)
+	mutex := wv.Core.SessionCollection.GetMutex(index)
 	mutex.Lock()
 	tx := s.Begin()
 	tx.Save(w)
 	tx.Commit()
 	mutex.Unlock()
 
-	whispersMutex.Lock()
-	whispersMap[w.UniqueId] = w
-	whispersMutex.Unlock()
+	whispersMap.Add(w.UniqueId, w)
 }
 
 func GetWhisper(uniqueId string) *Whisper {
-	whispersMutex.Lock()
-	w := whispersMap[uniqueId]
-	whispersMutex.Unlock()
-	return w
+	return whispersMap.Get(uniqueId)
 }
 
 func CreateNewWhisper(result *gotgbot.ChosenInlineResult) *Whisper {
@@ -72,24 +66,24 @@ func CreateNewWhisper(result *gotgbot.ChosenInlineResult) *Whisper {
 }
 
 func RemoveWhisper(w *Whisper) {
-	s := wv.Core.SessionCollection.GetSession(w.GetDBIndex())
-	mutex := wv.Core.SessionCollection.GetMutex(w.GetDBIndex())
+	index := w.GetDBIndex()
+	s := wv.Core.SessionCollection.GetSession(index)
+	mutex := wv.Core.SessionCollection.GetMutex(index)
 	mutex.Lock()
 	tx := s.Begin()
 	tx.Delete(w)
 	tx.Commit()
 	mutex.Unlock()
 
-	whispersMutex.Lock()
-	delete(whispersMap, w.UniqueId)
-	whispersMutex.Unlock()
+	whispersMap.Delete(w.UniqueId)
 }
 
 // removeWhisperDB will remove the specified whisper ONLY from database.
 // this function is an internal function to prevent from deadlock.
 func removeWhisperDB(w *Whisper) {
-	s := wv.Core.SessionCollection.GetSession(w.GetDBIndex())
-	mutex := wv.Core.SessionCollection.GetMutex(w.GetDBIndex())
+	index := w.GetDBIndex()
+	s := wv.Core.SessionCollection.GetSession(index)
+	mutex := wv.Core.SessionCollection.GetMutex(index)
 	mutex.Lock()
 	tx := s.Begin()
 	tx.Delete(w)
@@ -100,22 +94,14 @@ func removeWhisperDB(w *Whisper) {
 func checkWhispers() {
 	interval := wotoConfig.GetIntervalCheck()
 	expiry := wotoConfig.GetExpiry()
+	whispersMap.SetExpiration(expiry)
 
 	for {
 		time.Sleep(interval)
-		if whispersMap == nil || whispersMutex == nil {
+		if whispersMap == nil {
 			return
 		}
 
-		whispersMutex.Lock()
-		for _, whisper := range whispersMap {
-			if whisper.IsExpired(expiry) {
-				delete(whispersMap, whisper.UniqueId)
-
-				// prevent from deadlock
-				removeWhisperDB(whisper)
-			}
-		}
-		whispersMutex.Unlock()
+		whispersMap.DoCheck()
 	}
 }

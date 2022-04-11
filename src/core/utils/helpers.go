@@ -188,6 +188,31 @@ func readLongLong(b []byte) (int64, error) {
 	return x, nil
 }
 
+func isCorrectUsername(username string) bool {
+	for i, c := range username {
+		if (c < 'a' && c > 'z') || (c < 'A' && c > 'Z') {
+			if i == 0 || i == len(username)-1 {
+				return false
+			}
+
+			if c != '_' {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
+// isUsernameValid function checks if the username is valid or not.
+func isUsernameValid(value string) bool {
+	if len(value) < MinUsernameLength || value[0] != '@' {
+		return false
+	}
+
+	return isCorrectUsername(value[1:])
+}
+
 func ExtractRecipient(value string) *ExtractedResult {
 	if len(value) == 0 {
 		return nil
@@ -201,14 +226,14 @@ func ExtractRecipient(value string) *ExtractedResult {
 	// ID message
 	// message ID
 	myStrs := strings.Fields(value)
-	if myStrs[0][0] == '@' {
+	if isUsernameValid(myStrs[0]) {
 		result.Username = myStrs[0]
 		result.Text = strings.TrimPrefix(value, myStrs[0])
 		return result
 	}
 
 	last := len(myStrs) - 1
-	if myStrs[last][0] == '@' {
+	if isUsernameValid(myStrs[last]) {
 		result.Username = myStrs[last]
 		result.Text = strings.TrimSuffix(value, result.Username)
 		return result

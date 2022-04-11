@@ -11,9 +11,7 @@ import (
 //---------------------------------------------------------
 
 func (m *historyManager) GetUserHistory(ownerId int64) *HistoryCollection {
-	m.historyMutex.Lock()
-	h := m.historyMap[ownerId]
-	m.historyMutex.Unlock()
+	h := m.historyMap.Get(ownerId)
 
 	if h != nil && len(h.History) > wotoValues.MaximumHistory {
 		h.FixLength()
@@ -24,33 +22,24 @@ func (m *historyManager) GetUserHistory(ownerId int64) *HistoryCollection {
 
 func (m *historyManager) CreateCollection(ownerId int64) *HistoryCollection {
 	h := &HistoryCollection{
-		OwnerId:    ownerId,
-		cachedTime: time.Now(),
+		OwnerId: ownerId,
 	}
 
-	m.historyMutex.Lock()
-	m.historyMap[ownerId] = h
-	m.historyMutex.Unlock()
+	m.historyMap.Add(ownerId, h)
 
 	return h
 }
 
 func (m *historyManager) SetUserHistory(ownerId int64, h *HistoryCollection) {
-	m.historyMutex.Lock()
-	m.historyMap[ownerId] = h
-	m.historyMutex.Unlock()
+	m.historyMap.Add(ownerId, h)
 }
 
-func (m *historyManager) cleanUp(expiry time.Duration) {
-	m.historyMutex.Lock()
+func (m *historyManager) SetExpiration(expiration time.Duration) {
+	m.historyMap.SetExpiration(expiration)
+}
 
-	for k, v := range m.historyMap {
-		if v == nil || v.IsExpired(expiry) {
-			delete(m.historyMap, k)
-		}
-	}
-
-	m.historyMutex.Unlock()
+func (m *historyManager) cleanUp() {
+	m.historyMap.DoCheck()
 }
 
 //---------------------------------------------------------
@@ -103,15 +92,7 @@ func (c *HistoryCollection) AddUser(user *gotgbot.User) (new, removed *UserHisto
 	return
 }
 
-func (c *HistoryCollection) IsExpired(expiry time.Duration) bool {
-	return time.Since(c.cachedTime) > expiry
-}
-
 //---------------------------------------------------------
-
-func (u *UserData) IsExpired(expiry time.Duration) bool {
-	return time.Since(u.cachedTime) > expiry
-}
 
 func (u *UserData) IsBanned() bool {
 	return u.Status == UserStatusBanned

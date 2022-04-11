@@ -51,13 +51,10 @@ func ChangePrivacy(user *gotgbot.User, privacy bool) {
 	data := GetUserData(user.Id)
 	if data == nil {
 		data = &UserData{
-			UserId:     user.Id,
-			cachedTime: time.Now(),
+			UserId: user.Id,
 		}
 
-		userDataMutex.Lock()
-		userDataMap[user.Id] = data
-		userDataMutex.Unlock()
+		userDataMap.Add(user.Id, data)
 	}
 
 	if privacy == data.PrivacyMode {
@@ -82,13 +79,10 @@ func ChangeUserStatusById(userId int64, status UserStatus) {
 	data := GetUserData(userId)
 	if data == nil {
 		data = &UserData{
-			UserId:     userId,
-			cachedTime: time.Now(),
+			UserId: userId,
 		}
 
-		userDataMutex.Lock()
-		userDataMap[userId] = data
-		userDataMutex.Unlock()
+		userDataMap.Add(userId, data)
 	}
 
 	if data.Status == status {
@@ -109,9 +103,7 @@ func DisablePrivacy(user *gotgbot.User) {
 }
 
 func GetUserData(userId int64) *UserData {
-	userDataMutex.Lock()
-	data := userDataMap[userId]
-	userDataMutex.Unlock()
+	data := userDataMap.Get(userId)
 	if data != nil {
 		return data
 	}
@@ -131,9 +123,7 @@ func GetUserData(userId int64) *UserData {
 		return nil
 	}
 
-	userDataMutex.Lock()
-	userDataMap[userId] = data
-	userDataMutex.Unlock()
+	userDataMap.Add(userId, data)
 
 	return data
 }
@@ -224,9 +214,8 @@ func getUserHistoryFromDatabase(userId int64) *HistoryCollection {
 	mutex.Unlock()
 
 	return &HistoryCollection{
-		History:    history,
-		OwnerId:    userId,
-		cachedTime: time.Now(),
+		History: history,
+		OwnerId: userId,
 	}
 }
 
@@ -237,20 +226,15 @@ func uIdForUserHistory(ownerId, userId int64) string {
 func checkUsersData() {
 	interval := wotoConfig.GetIntervalCheck()
 	expiry := wotoConfig.GetExpiry()
+	theManager.SetExpiration(expiry)
+	userDataMap.SetExpiration(expiry)
 	for {
 		time.Sleep(interval)
 		if userDataMap == nil || theManager == nil {
 			return
 		}
 
-		theManager.cleanUp(expiry)
-
-		userDataMutex.Lock()
-		for key, value := range userDataMap {
-			if value == nil || value.IsExpired(expiry) {
-				delete(userDataMap, key)
-			}
-		}
-		userDataMutex.Unlock()
+		theManager.cleanUp()
+		userDataMap.DoCheck()
 	}
 }
