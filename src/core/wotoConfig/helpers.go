@@ -3,7 +3,7 @@ package wotoConfig
 import (
 	"time"
 
-	"github.com/ALiwoto/StrongStringGo/strongStringGo"
+	"github.com/AnimeKaizoku/ssg/ssg"
 )
 
 func ParseConfig(configFile string) (*PsstBotConfig, error) {
@@ -13,7 +13,7 @@ func ParseConfig(configFile string) (*PsstBotConfig, error) {
 
 	s := &PsstBotConfig{}
 
-	err := strongStringGo.ParseConfig(s, configFile)
+	err := ssg.ParseConfig(s, configFile)
 	if err != nil {
 		return nil, err
 	}

@@ -1,7 +1,7 @@
 package whisperDatabase
 
 import (
-	"github.com/ALiwoto/StrongStringGo/strongStringGo"
+	"github.com/AnimeKaizoku/ssg/ssg"
 )
 
 // database models
@@ -12,5 +12,5 @@ var (
 // caching
 var (
 	// whispersMap is a map with unique id as key and whisper as value.
-	whispersMap = strongStringGo.NewSafeEMap[string, Whisper]()
+	whispersMap = ssg.NewSafeEMap[string, Whisper]()
 )

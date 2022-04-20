@@ -3,12 +3,12 @@ package startPlugin
 import (
 	"strconv"
 
-	"github.com/ALiwoto/StrongStringGo/strongStringGo"
 	"github.com/ALiwoto/mdparser/mdparser"
 	"github.com/AnimeKaizoku/PsstRobot/src/core"
 	"github.com/AnimeKaizoku/PsstRobot/src/core/utils"
 	"github.com/AnimeKaizoku/PsstRobot/src/database/usersDatabase"
 	"github.com/AnimeKaizoku/PsstRobot/src/database/whisperDatabase"
+	"github.com/AnimeKaizoku/ssg/ssg"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
 )
@@ -26,7 +26,7 @@ func startHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 func privacyHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 	user := ctx.EffectiveUser
 	message := ctx.EffectiveMessage
-	args := strongStringGo.SplitN(message.Text, 2, " ")
+	args := ssg.SplitN(message.Text, 2, " ")
 	enabled := usersDatabase.HasPrivacy(user)
 	preString := func() string {
 		if enabled {

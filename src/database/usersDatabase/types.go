@@ -1,7 +1,7 @@
 package usersDatabase
 
 import (
-	ws "github.com/ALiwoto/StrongStringGo/strongStringGo"
+	ws "github.com/AnimeKaizoku/ssg/ssg"
 )
 
 type UserStatus int

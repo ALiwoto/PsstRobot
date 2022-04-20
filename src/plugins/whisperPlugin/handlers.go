@@ -4,7 +4,6 @@ import (
 	"strings"
 	"time"
 
-	ws "github.com/ALiwoto/StrongStringGo/strongStringGo"
 	"github.com/ALiwoto/mdparser/mdparser"
 	"github.com/AnimeKaizoku/PsstRobot/src/core"
 	"github.com/AnimeKaizoku/PsstRobot/src/core/logging"
@@ -12,6 +11,7 @@ import (
 	wv "github.com/AnimeKaizoku/PsstRobot/src/core/wotoValues"
 	"github.com/AnimeKaizoku/PsstRobot/src/database/usersDatabase"
 	"github.com/AnimeKaizoku/PsstRobot/src/database/whisperDatabase"
+	ws "github.com/AnimeKaizoku/ssg/ssg"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
 )
