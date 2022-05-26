@@ -2,10 +2,12 @@ package startPlugin
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/ALiwoto/mdparser/mdparser"
 	"github.com/AnimeKaizoku/PsstRobot/src/core"
 	"github.com/AnimeKaizoku/PsstRobot/src/core/utils"
+	wv "github.com/AnimeKaizoku/PsstRobot/src/core/wotoValues"
 	"github.com/AnimeKaizoku/PsstRobot/src/database/usersDatabase"
 	"github.com/AnimeKaizoku/PsstRobot/src/database/whisperDatabase"
 	"github.com/AnimeKaizoku/ssg/ssg"
@@ -14,10 +16,28 @@ import (
 )
 
 func startHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
-	// and example of a start handler with a cb param can be this:
-	// "/start 1gs9860=17uurds"
-	if utils.IsStartedForWhisper(ctx.EffectiveMessage.Text) {
-		return sendWhisperText(bot, ctx)
+	msg := ctx.EffectiveMessage
+
+	// checking for a space in text message is most probably one of
+	// the best ways in reducing checkers in un-expected cases.
+	if strings.Contains(msg.Text, " ") {
+		// and example of a start handler with a cb param can be this:
+		// "/start 1gs9860=17uurds"
+		if utils.IsStartedForWhisper(ctx.EffectiveMessage.Text) {
+			return sendWhisperText(bot, ctx)
+		}
+
+		// user might have been redirected from other inline
+		// sections of the bot (such as "too long" error).
+		myStrs := strings.Split(msg.Text, " ")
+		if len(myStrs) > 1 {
+			switch myStrs[1] {
+			case wv.StartDataCreate:
+				return wv.CreateWhisperHandler(bot, ctx)
+			case wv.HelpDataInline:
+				return helpHandler(bot, ctx)
+			}
+		}
 	}
 
 	return normalStartHandler(bot, ctx)
@@ -58,6 +78,22 @@ func privacyHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 		DisableWebPagePreview:    true,
 		AllowSendingWithoutReply: true,
 	})
+	return ext.EndGroups
+}
+
+func helpHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
+	user := ctx.EffectiveUser
+	message := ctx.EffectiveMessage
+
+	md := mdparser.GetNormal("hi ")
+	md.Mention(user.FirstName, user.Id)
+	md.Normal("!\nThis help section is not completed (yet).")
+
+	_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
+		ParseMode:             core.MarkdownV2,
+		DisableWebPagePreview: true,
+	})
+
 	return ext.EndGroups
 }
 

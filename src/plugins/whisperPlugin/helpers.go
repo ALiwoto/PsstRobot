@@ -143,6 +143,8 @@ func isEveryone(text string) bool {
 
 // LoadHandlers helper function will load all handlers for the current plugin.
 func LoadHandlers(d *ext.Dispatcher, t []rune) {
+	wv.CreateWhisperHandler = createHandler
+
 	cancelCmd := handlers.NewCommand(CancelWhisperData, cancelWhisperResponse)
 	sendWhisperIq := handlers.NewInlineQuery(sendwhisperFilter, sendWhisperResponse)
 	chosenWhisperIq := handlers.NewChosenInlineResult(chosenWhisperFilter, chosenWhisperResponse)
