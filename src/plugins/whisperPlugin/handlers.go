@@ -105,7 +105,7 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 
 //---------------------------------------------------------
 
-func sendwhisperFilter(iq *gotgbot.InlineQuery) bool {
+func sendWhisperFilter(iq *gotgbot.InlineQuery) bool {
 	return true
 }
 

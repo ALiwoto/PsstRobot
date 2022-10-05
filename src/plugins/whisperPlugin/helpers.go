@@ -146,10 +146,10 @@ func LoadHandlers(d *ext.Dispatcher, t []rune) {
 	wv.CreateWhisperHandler = createHandler
 
 	cancelCmd := handlers.NewCommand(CancelWhisperData, cancelWhisperResponse)
-	sendWhisperIq := handlers.NewInlineQuery(sendwhisperFilter, sendWhisperResponse)
+	sendWhisperIq := handlers.NewInlineQuery(sendWhisperFilter, sendWhisperResponse)
 	chosenWhisperIq := handlers.NewChosenInlineResult(chosenWhisperFilter, chosenWhisperResponse)
-	showWishperCb := handlers.NewCallback(showWhisperCallBackQuery, showWhisperResponse)
-	cancelWishperCb := handlers.NewCallback(cancelWhisperCallBackQuery, cancelWhisperResponse)
+	showWhisperCb := handlers.NewCallback(showWhisperCallBackQuery, showWhisperResponse)
+	cancelWhisperCb := handlers.NewCallback(cancelWhisperCallBackQuery, cancelWhisperResponse)
 	whisperGeneratorListener := handlers.NewMessage(generatorListenerFilter, generatorListenerHandler)
 	createCmd := handlers.NewCommand(createCommand, createHandler)
 
@@ -159,8 +159,8 @@ func LoadHandlers(d *ext.Dispatcher, t []rune) {
 	d.AddHandler(cancelCmd)
 	d.AddHandler(chosenWhisperIq)
 	d.AddHandler(sendWhisperIq)
-	d.AddHandler(showWishperCb)
-	d.AddHandler(cancelWishperCb)
+	d.AddHandler(showWhisperCb)
+	d.AddHandler(cancelWhisperCb)
 	d.AddHandler(whisperGeneratorListener)
 	d.AddHandler(createCmd)
 }
