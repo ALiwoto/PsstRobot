@@ -1,11 +1,11 @@
 package wotoValues
 
 const (
-	MaximumHistory    = 3
-	MultiDbLength     = 10
-	MultiDbLastIndex  = 9
-	MultiDbFirstIndex = 0
-	MinWhisperText    = 1
+	MaximumHistory       = 3
+	MultiDbLength        = 10
+	MultiDbLastIndex     = 9
+	MultiDbFirstIndex    = 0
+	MinWhisperTextLength = 1
 )
 
 const (

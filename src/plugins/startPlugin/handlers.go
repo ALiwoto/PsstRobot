@@ -22,7 +22,7 @@ func startHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 	// the best ways in reducing checkers in un-expected cases.
 	if strings.Contains(msg.Text, " ") {
 		// and example of a start handler with a cb param can be this:
-		// "/start 1gs9860=17uurds"
+		// "/start 1gs9860=17something"
 		if utils.IsStartedForWhisper(ctx.EffectiveMessage.Text) {
 			return sendWhisperText(bot, ctx)
 		}
