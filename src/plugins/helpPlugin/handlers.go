@@ -24,7 +24,7 @@ func helpHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 	md.Normal("Prepares an advanced whisper message, all types of medias and ")
 	md.Normal("media-albums are supported.\n\n")
 	md.Bold("• ").Mono("/list").Bold(": \n\t\t")
-	md.Normal("Lists all of your current pending whisper messages.")
+	md.Normal("Lists all of your current pending whisper messages.\n\n")
 	md.Bold("• ").Mono("/privacy").Bold(": \n\t\t")
 	md.Normal("Displays your current privacy mode. You can disable/enable it ")
 	md.Normal("using this same command. If your privacy is enabled, ")

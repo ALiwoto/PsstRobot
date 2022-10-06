@@ -27,7 +27,7 @@ func getMainMenuHelpButtons() *gotgbot.InlineKeyboardMarkup {
 		Url:  "https://t.me/KaizokuBots",
 	})
 	markup.InlineKeyboard[2] = append(markup.InlineKeyboard[2], gotgbot.InlineKeyboardButton{
-		Text: "Made with ❤️ by ☠️kaizoku",
+		Text: "☠️kaizoku",
 		Url:  "https://t.me/Kaizoku/158",
 	})
 
