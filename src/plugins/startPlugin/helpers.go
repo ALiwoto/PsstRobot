@@ -9,13 +9,10 @@ import (
 func LoadHandlers(d *ext.Dispatcher, t []rune) {
 	startCmd := handlers.NewCommand(startCommand, startHandler)
 	privacyCmd := handlers.NewCommand(privacyCommand, privacyHandler)
-	helpCmd := handlers.NewCommand(helpCommand, helpHandler)
 
 	startCmd.Triggers = t
 	privacyCmd.Triggers = t
-	helpCmd.Triggers = t
 
 	d.AddHandler(startCmd)
 	d.AddHandler(privacyCmd)
-	d.AddHandler(helpCmd)
 }
