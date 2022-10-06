@@ -15,11 +15,16 @@ func helpHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 	md.Mention(user.FirstName, user.Id)
 	md.Normal("!\nI'm " + bot.Username + ", a whisper bot with extra" +
 		" features!\n")
-	md.Normal("Here is some of the commands you can use:\n\n")
+	md.Normal("You can use this in inline mode, just type:\n")
+	md.Mono("@" + bot.Username + " @username your whisper text here!\n")
+	md.Normal("(you can also use numeric user-id instead of a username).\n\n")
+	md.Normal("Here is some of the commands you can use in my pm:\n")
 
 	md.Bold("• ").Mono("/create").Bold(": \n\t\t")
 	md.Normal("Prepares an advanced whisper message, all types of medias and ")
 	md.Normal("media-albums are supported.\n\n")
+	md.Bold("• ").Mono("/list").Bold(": \n\t\t")
+	md.Normal("Lists all of your current pending whisper messages.")
 	md.Bold("• ").Mono("/privacy").Bold(": \n\t\t")
 	md.Normal("Displays your current privacy mode. You can disable/enable it ")
 	md.Normal("using this same command. If your privacy is enabled, ")
@@ -31,6 +36,7 @@ func helpHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 	md.Normal("using buttons of that panel.")
 
 	_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
+		ReplyMarkup:           getMainMenuHelpButtons(),
 		ParseMode:             core.MarkdownV2,
 		DisableWebPagePreview: true,
 	})
