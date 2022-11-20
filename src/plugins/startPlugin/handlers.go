@@ -110,7 +110,7 @@ func sendWhisperText(bot *gotgbot.Bot, ctx *ext.Context) error {
 		return normalStartHandler(bot, ctx)
 	}
 
-	senderInfo, err := bot.GetChat(w.Sender)
+	senderInfo, err := bot.GetChat(w.Sender, nil)
 	var senderMd mdparser.WMarkDown
 	if err == nil && senderInfo != nil {
 		senderMd = mdparser.GetUserMention(senderInfo.FirstName, senderInfo.Id)
@@ -120,7 +120,7 @@ func sendWhisperText(bot *gotgbot.Bot, ctx *ext.Context) error {
 
 	var targetMd mdparser.WMarkDown
 	if w.Recipient != 0 && w.RecipientUsername == "" {
-		targetInfo, err := bot.GetChat(w.Recipient)
+		targetInfo, err := bot.GetChat(w.Recipient, nil)
 		if err == nil && targetInfo != nil {
 			targetMd = mdparser.GetUserMention(targetInfo.FirstName, targetInfo.Id)
 		} else {

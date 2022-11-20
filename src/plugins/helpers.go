@@ -18,9 +18,10 @@ func StartTelegramBot() error {
 	}
 
 	b, err := gotgbot.NewBot(token, &gotgbot.BotOpts{
-		Client:      http.Client{},
-		GetTimeout:  2 * gotgbot.DefaultGetTimeout,
-		PostTimeout: 2 * gotgbot.DefaultPostTimeout,
+		Client: http.Client{},
+		DefaultRequestOpts: &gotgbot.RequestOpts{
+			Timeout: 6 * gotgbot.DefaultTimeout,
+		},
 	})
 	if err != nil {
 		return err
@@ -32,10 +33,28 @@ func StartTelegramBot() error {
 		},
 	}
 
-	utmp := ext.NewUpdater(uOptions)
-	updater := &utmp
+	tmpUpdater := ext.NewUpdater(uOptions)
+	updater := &tmpUpdater
 	err = updater.StartPolling(b, &ext.PollingOpts{
 		DropPendingUpdates: false,
+		GetUpdatesOpts: gotgbot.GetUpdatesOpts{
+			AllowedUpdates: []string{
+				gotgbot.UpdateTypeMessage,
+				gotgbot.UpdateTypeEditedMessage,
+				gotgbot.UpdateTypeChannelPost,
+				// gotgbot.UpdateTypeEditedChannelPost,
+				gotgbot.UpdateTypeInlineQuery,
+				gotgbot.UpdateTypeChosenInlineResult,
+				gotgbot.UpdateTypeCallbackQuery,
+				gotgbot.UpdateTypeShippingQuery,
+				gotgbot.UpdateTypePreCheckoutQuery,
+				// gotgbot.UpdateTypePoll,
+				// gotgbot.UpdateTypePollAnswer,
+				// gotgbot.UpdateTypeMyChatMember,
+				// gotgbot.UpdateTypeChatMember,
+				// gotgbot.UpdateTypeChatJoinRequest,
+			},
+		},
 	})
 	if err != nil {
 		return err

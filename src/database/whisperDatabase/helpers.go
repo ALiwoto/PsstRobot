@@ -35,6 +35,17 @@ func LoadAllWhispers() {
 	go checkWhispers()
 }
 
+func UpdateWhisper(w *Whisper) {
+	index := w.GetDBIndex()
+	s := wv.Core.SessionCollection.GetSession(index)
+	mutex := wv.Core.SessionCollection.GetMutex(index)
+	mutex.Lock()
+	tx := s.Begin()
+	tx.Save(w)
+	tx.Commit()
+	mutex.Unlock()
+}
+
 func AddWhisper(w *Whisper) {
 	index := w.GetDBIndex()
 	s := wv.Core.SessionCollection.GetSession(index)
@@ -52,7 +63,7 @@ func GetWhisper(uniqueId string) *Whisper {
 	return whispersMap.Get(uniqueId)
 }
 
-func CreateNewWhisper(result *gotgbot.ChosenInlineResult) *Whisper {
+func CreateNewWhisperFromChosen(result *gotgbot.ChosenInlineResult) *Whisper {
 	w := &Whisper{
 		Sender:          result.From.Id,
 		Text:            result.Query,
@@ -95,6 +106,9 @@ func checkWhispers() {
 	interval := wotoConfig.GetIntervalCheck()
 	expiry := wotoConfig.GetExpiry()
 	whispersMap.SetExpiration(expiry)
+	whispersMap.SetOnExpired(func(key string, value Whisper) {
+		removeWhisperDB(&value)
+	})
 
 	for {
 		time.Sleep(interval)

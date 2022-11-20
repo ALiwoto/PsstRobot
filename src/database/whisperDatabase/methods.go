@@ -44,7 +44,7 @@ func (w *Whisper) ParseAsMd(bot *gotgbot.Bot) mdparser.WMarkDown {
 	if w.RecipientUsername != "" {
 		rec = mdparser.GetNormal(w.RecipientUsername)
 	} else if w.Recipient != 0 {
-		chat, _ := bot.GetChat(w.Recipient)
+		chat, _ := bot.GetChat(w.Recipient, nil)
 		if chat != nil {
 			rec = mdparser.GetUserMention(chat.FirstName, chat.Id)
 		} else {
@@ -77,7 +77,7 @@ func (w *Whisper) GetInlineTitle(bot *gotgbot.Bot) string {
 	if w.RecipientUsername != "" {
 		name = w.RecipientUsername
 	} else if w.Recipient != 0 {
-		chat, _ := bot.GetChat(w.Recipient)
+		chat, _ := bot.GetChat(w.Recipient, nil)
 		if chat != nil {
 			name = chat.FirstName
 		} else {
@@ -91,6 +91,14 @@ func (w *Whisper) GetInlineTitle(bot *gotgbot.Bot) string {
 
 func (w *Whisper) GetInlineDescription() string {
 	return "Only they can read this advanced whisper."
+}
+
+func (w *Whisper) GetInputMessageContent(bot *gotgbot.Bot) *gotgbot.InputTextMessageContent {
+	return &gotgbot.InputTextMessageContent{
+		MessageText:           w.ParseAsMd(bot).ToString(),
+		ParseMode:             gotgbot.ParseModeMarkdownV2,
+		DisableWebPagePreview: true,
+	}
 }
 
 func (w *Whisper) ShouldRedirect() bool {

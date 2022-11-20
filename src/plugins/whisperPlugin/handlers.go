@@ -43,7 +43,7 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	w := whisperDatabase.GetWhisper(myStrs[1])
 	if w == nil {
 		_, _ = query.Answer(bot, &gotgbot.AnswerCallbackQueryOpts{
-			Text:      "This whisper is too old...",
+			Text:      "This whisper is too old or it has already been read...",
 			ShowAlert: true,
 			CacheTime: 2500,
 		})
@@ -133,20 +133,25 @@ func sendWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		markup.InlineKeyboard = make([][]gotgbot.InlineKeyboardButton, 1)
 		markup.InlineKeyboard[0] = append(markup.InlineKeyboard[0], gotgbot.InlineKeyboardButton{
 			Text:         "🔐 show message",
-			CallbackData: ShowWhisperData + sepChar,
+			CallbackData: ShowWhisperData + sepChar + w.UniqueId,
 		})
 
 		advancedResults = append(advancedResults, &gotgbot.InlineQueryResultArticle{
 			Id:                  query.Query,
 			Title:               w.GetInlineTitle(bot),
 			Description:         w.GetInlineDescription(),
-			InputMessageContent: generatingInputMessageContent,
+			InputMessageContent: w.GetInputMessageContent(bot),
 			ReplyMarkup:         markup,
 		})
 
-		_, _ = query.Answer(bot, advancedResults, &gotgbot.AnswerInlineQueryOpts{
+		_, err := query.Answer(bot, advancedResults, &gotgbot.AnswerInlineQueryOpts{
 			IsPersonal: true,
 		})
+		if err == nil {
+			// a hacky way to make this advanced whisper unable to be sent twice.
+			w.InlineMessageId = "sent"
+			whisperDatabase.UpdateWhisper(w)
+		}
 	}
 
 	var results []gotgbot.InlineQueryResult
@@ -173,7 +178,7 @@ func sendWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		} else if result.TargetID > 0 {
 			var chat *gotgbot.Chat
 			var err error
-			chat, err = bot.GetChat(result.TargetID)
+			chat, err = bot.GetChat(result.TargetID, nil)
 			if err == nil && chat != nil {
 				title = "🔐 A whisper message to " + chat.FirstName
 			}
@@ -252,9 +257,14 @@ func chosenWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 
 		w.InlineMessageId = result.InlineMessageId
 		/* update the whisper actually */
-		whisperDatabase.AddWhisper(w)
+		whisperDatabase.UpdateWhisper(w)
+
+		// No need to edit the message if the message is an advanced whisper
+		// message.
+		// See also: https://github.com/AnimeKaizoku/PsstRobot/issues/2
+		return ext.EndGroups
 	} else {
-		w = whisperDatabase.CreateNewWhisper(result)
+		w = whisperDatabase.CreateNewWhisperFromChosen(result)
 	}
 
 	markup := &gotgbot.InlineKeyboardMarkup{}

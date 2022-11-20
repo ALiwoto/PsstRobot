@@ -132,7 +132,7 @@ func (a *AdvancedWhisper) GetTargetAsMd() mdparser.WMarkDown {
 		if a.bot == nil {
 			return mdparser.GetMono(strconv.FormatInt(a.TargetId, 10))
 		}
-		chat, err := a.bot.GetChat(a.TargetId)
+		chat, err := a.bot.GetChat(a.TargetId, nil)
 		if err != nil || chat == nil {
 			return mdparser.GetMono(strconv.FormatInt(a.TargetId, 10))
 		}
