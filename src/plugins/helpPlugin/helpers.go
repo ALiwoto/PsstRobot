@@ -1,10 +1,7 @@
 package helpPlugin
 
 import (
-	wv "github.com/AnimeKaizoku/PsstRobot/src/core/wotoValues"
 	"github.com/PaulSonOfLars/gotgbot/v2"
-	"github.com/PaulSonOfLars/gotgbot/v2/ext"
-	"github.com/PaulSonOfLars/gotgbot/v2/ext/handlers"
 )
 
 func getMainMenuHelpButtons() *gotgbot.InlineKeyboardMarkup {
@@ -32,14 +29,4 @@ func getMainMenuHelpButtons() *gotgbot.InlineKeyboardMarkup {
 	})
 
 	return markup
-}
-
-// LoadHandlers helper function will load all handlers for the current plugin.
-func LoadHandlers(d *ext.Dispatcher, t []rune) {
-	wv.HelpHandler = helpHandler
-	helpCmd := handlers.NewCommand(helpCommand, helpHandler)
-
-	helpCmd.Triggers = t
-
-	d.AddHandler(helpCmd)
 }
