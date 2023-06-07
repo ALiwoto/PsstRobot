@@ -43,11 +43,11 @@ func getUserWhisperHistoryButtons() *gotgbot.InlineKeyboardMarkup {
 			{
 				{
 					Text:         "Clear whisper history",
-					CallbackData: helpCommand,
+					CallbackData: clearUserHistoryData,
 				},
 				{
 					Text:         "Disable whisper history",
-					CallbackData: helpCommand,
+					CallbackData: disableUserHistoryData,
 				},
 			},
 			{

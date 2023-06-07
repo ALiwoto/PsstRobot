@@ -7,12 +7,12 @@ func getNormalStartButtons() *gotgbot.InlineKeyboardMarkup {
 		InlineKeyboard: [][]gotgbot.InlineKeyboardButton{
 			{
 				{
-					Text:         "📗 Help",
-					CallbackData: helpCommand,
-				},
-				{
 					Text:              "📝 Use me",
 					SwitchInlineQuery: new(string),
+				},
+				{
+					Text:         "📗 Help",
+					CallbackData: helpCommand,
 				},
 			},
 		},
