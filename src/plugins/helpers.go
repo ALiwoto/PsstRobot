@@ -28,16 +28,19 @@ func StartTelegramBot() error {
 	}
 
 	uOptions := &ext.UpdaterOpts{
-		DispatcherOpts: ext.DispatcherOpts{
+		Dispatcher: ext.NewDispatcher(&ext.DispatcherOpts{
 			MaxRoutines: -1,
-		},
+		}),
 	}
 
-	tmpUpdater := ext.NewUpdater(uOptions)
-	updater := &tmpUpdater
+	updater := ext.NewUpdater(uOptions)
 	err = updater.StartPolling(b, &ext.PollingOpts{
 		DropPendingUpdates: false,
 		GetUpdatesOpts: gotgbot.GetUpdatesOpts{
+			Timeout: 30,
+			RequestOpts: &gotgbot.RequestOpts{
+				Timeout: 6 * gotgbot.DefaultTimeout,
+			},
 			AllowedUpdates: []string{
 				gotgbot.UpdateTypeMessage,
 				gotgbot.UpdateTypeEditedMessage,
