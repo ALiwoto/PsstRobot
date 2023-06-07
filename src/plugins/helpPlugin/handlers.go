@@ -97,10 +97,11 @@ func clearUserHistoryCallBackQuery(cq *gotgbot.CallbackQuery) bool {
 
 func clearUserHistoryResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	message := ctx.EffectiveMessage
+	user := ctx.EffectiveUser
 
 	var txt mdparser.WMarkDown
 
-	if usersDatabase.ClearUserWhisperHistory(message.From.Id) {
+	if usersDatabase.ClearUserWhisperHistory(user.Id) {
 		txt = mdparser.GetBold("User whisper history cleared successfully!")
 	} else {
 		txt = mdparser.GetBold("No user history to clear!")
