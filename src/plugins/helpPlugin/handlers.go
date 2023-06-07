@@ -121,7 +121,7 @@ func clearUserHistoryResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 }
 
 func disableUserHistoryCallBackQuery(cq *gotgbot.CallbackQuery) bool {
-	return cq.Data == clearUserHistoryData
+	return cq.Data == disableUserHistoryData
 }
 
 func disableUserHistoryResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
