@@ -180,9 +180,7 @@ func ClearUserWhisperHistory(userId int64) bool {
 	mutex := wv.Core.SessionCollection.GetMutex(index)
 
 	mutex.Lock()
-	session.Model(ModelUserHistory).Delete(
-		"owner_id = ?", userId,
-	)
+	session.Delete(&UserHistoryValue{}, "owner_id = ?", userId)
 	mutex.Unlock()
 
 	return true

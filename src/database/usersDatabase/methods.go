@@ -68,8 +68,11 @@ func (c *HistoryCollection) HasTooMuch() bool {
 
 func (c *HistoryCollection) FixLength() (removed []UserHistoryValue) {
 	counter := len(c.History) - wotoValues.MaximumHistory
-	c.History = c.History[counter:]
-	return c.History[:counter]
+	newHistory := c.History[counter:]
+	removed = c.History[:counter]
+
+	c.History = newHistory
+	return
 }
 
 func (c *HistoryCollection) AddUser(user *gotgbot.User) (new, removed *UserHistoryValue) {
