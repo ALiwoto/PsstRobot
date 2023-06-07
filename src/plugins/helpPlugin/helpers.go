@@ -1,6 +1,7 @@
 package helpPlugin
 
 import (
+	"github.com/AnimeKaizoku/PsstRobot/src/database/usersDatabase"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 )
 
@@ -37,7 +38,17 @@ func getMainMenuHelpButtons() *gotgbot.InlineKeyboardMarkup {
 	}
 }
 
-func getUserWhisperHistoryButtons() *gotgbot.InlineKeyboardMarkup {
+func disableOrEnable(value bool) string {
+	if value {
+		return "Enable"
+	}
+
+	return "Disable"
+}
+
+func getUserWhisperHistoryButtons(userId int64) *gotgbot.InlineKeyboardMarkup {
+	historyDisabled := usersDatabase.IsHistoryDisabled(userId)
+
 	return &gotgbot.InlineKeyboardMarkup{
 		InlineKeyboard: [][]gotgbot.InlineKeyboardButton{
 			{
@@ -46,8 +57,8 @@ func getUserWhisperHistoryButtons() *gotgbot.InlineKeyboardMarkup {
 					CallbackData: clearUserHistoryData,
 				},
 				{
-					Text:         "Disable whisper history",
-					CallbackData: disableUserHistoryData,
+					Text:         disableOrEnable(!historyDisabled) + " whisper history",
+					CallbackData: toggleUserHistoryData,
 				},
 			},
 			{

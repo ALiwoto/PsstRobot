@@ -67,6 +67,7 @@ func userWhisperHistoryCallBackQuery(cq *gotgbot.CallbackQuery) bool {
 
 func userWhisperHistoryResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	message := ctx.EffectiveMessage
+	user := ctx.EffectiveUser
 
 	txt := mdparser.GetBold("🗒User whisper history")
 	txt.Normal("\n" + bot.Username + " keeps track of the three most recent users you've")
@@ -79,12 +80,12 @@ func userWhisperHistoryResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	if message.From.Id == bot.Id {
 		_, _, _ = message.EditText(bot, txt.ToString(), &gotgbot.EditMessageTextOpts{
 			ParseMode:   gotgbot.ParseModeMarkdownV2,
-			ReplyMarkup: *getUserWhisperHistoryButtons(),
+			ReplyMarkup: *getUserWhisperHistoryButtons(user.Id),
 		})
 	} else {
 		_, _ = message.Reply(bot, txt.ToString(), &gotgbot.SendMessageOpts{
 			ParseMode:   gotgbot.ParseModeMarkdownV2,
-			ReplyMarkup: getUserWhisperHistoryButtons(),
+			ReplyMarkup: getUserWhisperHistoryButtons(user.Id),
 		})
 	}
 
@@ -120,16 +121,21 @@ func clearUserHistoryResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	return ext.EndGroups
 }
 
-func disableUserHistoryCallBackQuery(cq *gotgbot.CallbackQuery) bool {
-	return cq.Data == disableUserHistoryData
+func toggleUserHistoryCallBackQuery(cq *gotgbot.CallbackQuery) bool {
+	return cq.Data == toggleUserHistoryData
 }
 
-func disableUserHistoryResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
+func toggleUserHistoryResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 	message := ctx.EffectiveMessage
+	user := ctx.EffectiveUser
 
-	usersDatabase.DisableUserWhisperHistory(ctx.EffectiveUser)
+	var txt mdparser.WMarkDown
+	if usersDatabase.ToggleUserWhisperHistory(user.Id) {
+		txt = mdparser.GetNormal("User whisper history has been disabled.")
+	} else {
+		txt = mdparser.GetNormal("User whisper history has been enabled.")
+	}
 
-	txt := mdparser.GetBold("User whisper history has been disabled.")
 	if message.From.Id == bot.Id {
 		_, _, _ = message.EditText(bot, txt.ToString(), &gotgbot.EditMessageTextOpts{
 			ParseMode: gotgbot.ParseModeMarkdownV2,

@@ -8,5 +8,5 @@ const (
 	sepChar                = "_"
 	userWhisperHistoryData = "userWhisperHistory"
 	clearUserHistoryData   = "clearUserHistory"
-	disableUserHistoryData = "DisableUserHistory"
+	toggleUserHistoryData  = "toggleUserHistory"
 )

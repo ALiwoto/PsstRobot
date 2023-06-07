@@ -70,6 +70,12 @@ func ChangeUserWhisperHistory(userId int64, disabled bool) {
 	UpdateUserData(data)
 }
 
+func ToggleUserWhisperHistory(userId int64) (disabled bool) {
+	disabled = !IsHistoryDisabled(userId)
+	ChangeUserWhisperHistory(userId, disabled)
+	return
+}
+
 func ChangePrivacy(user *gotgbot.User, privacy bool) {
 	data := GetUserData(user.Id)
 	if data == nil {

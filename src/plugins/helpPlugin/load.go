@@ -14,7 +14,7 @@ func LoadHandlers(d *ext.Dispatcher, t []rune) {
 	userWhisperHistoryCb := handlers.NewCallback(userWhisperHistoryCallBackQuery, userWhisperHistoryResponse)
 	helpCb := handlers.NewCallback(helpCallBackQuery, helpHandler)
 	clearUserHistoryCb := handlers.NewCallback(clearUserHistoryCallBackQuery, clearUserHistoryResponse)
-	disableUserHistoryCb := handlers.NewCallback(disableUserHistoryCallBackQuery, disableUserHistoryResponse)
+	toggleUserHistoryCb := handlers.NewCallback(toggleUserHistoryCallBackQuery, toggleUserHistoryResponse)
 
 	helpCmd.Triggers = t
 	userWhisperHistoryCmd.Triggers = t
@@ -24,5 +24,5 @@ func LoadHandlers(d *ext.Dispatcher, t []rune) {
 	d.AddHandler(userWhisperHistoryCmd)
 	d.AddHandler(userWhisperHistoryCb)
 	d.AddHandler(clearUserHistoryCb)
-	d.AddHandler(disableUserHistoryCb)
+	d.AddHandler(toggleUserHistoryCb)
 }
