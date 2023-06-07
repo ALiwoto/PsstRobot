@@ -5,5 +5,8 @@ const (
 )
 
 const (
-	clearHistoryData = "clear_history"
+	sepChar                = "_"
+	userWhisperHistoryData = "userWhisperHistory"
+	clearUserHistoryData   = "clearUserHistory"
+	disableUserHistoryData = "DisableUserHistory"
 )

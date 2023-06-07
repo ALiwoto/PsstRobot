@@ -88,8 +88,11 @@ func (c *HistoryCollection) AddUser(user *gotgbot.User) (new, removed *UserHisto
 	c.History = append(c.History, *h)
 
 	new = h
-
 	return
+}
+
+func (c *HistoryCollection) Clear() {
+	c.History = nil
 }
 
 //---------------------------------------------------------

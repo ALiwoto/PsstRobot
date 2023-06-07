@@ -23,7 +23,8 @@ type UserHistoryValue struct {
 }
 
 type UserData struct {
-	UserId      int64      `json:"user_id" gorm:"primaryKey"`
-	Status      UserStatus `json:"status"`
-	PrivacyMode bool       `json:"privacy_mode"`
+	UserId            int64      `json:"user_id" gorm:"primaryKey"`
+	Status            UserStatus `json:"status"`
+	PrivacyMode       bool       `json:"privacy_mode"`
+	IsHistoryDisabled bool       `json:"is_history_disabled"`
 }

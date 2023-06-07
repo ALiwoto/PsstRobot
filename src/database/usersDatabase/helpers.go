@@ -15,6 +15,10 @@ func LoadUsersDatabase() {
 }
 
 func GetUserHistory(ownerId int64) *HistoryCollection {
+	if IsHistoryDisabled(ownerId) {
+		return nil
+	}
+
 	collection := theManager.GetUserHistory(ownerId)
 	if collection != nil {
 		if collection.IsEmpty() {
@@ -47,6 +51,25 @@ func HasPrivacy(user *gotgbot.User) bool {
 	return PrivacyEnabled(user.Id)
 }
 
+func ChangeUserWhisperHistory(userId int64, disabled bool) {
+	data := GetUserData(userId)
+	if data == nil {
+		data = &UserData{
+			UserId: userId,
+		}
+
+		userDataMap.Add(userId, data)
+	}
+
+	if data.IsHistoryDisabled == disabled {
+		// prevent from sending unnecessary database queries
+		return
+	}
+
+	data.IsHistoryDisabled = disabled
+	UpdateUserData(data)
+}
+
 func ChangePrivacy(user *gotgbot.User, privacy bool) {
 	data := GetUserData(user.Id)
 	if data == nil {
@@ -69,6 +92,11 @@ func ChangePrivacy(user *gotgbot.User, privacy bool) {
 func IsUserBanned(user *gotgbot.User) bool {
 	data := GetUserData(user.Id)
 	return data != nil && data.IsBanned()
+}
+
+func IsHistoryDisabled(userId int64) bool {
+	data := GetUserData(userId)
+	return data != nil && data.IsHistoryDisabled
 }
 
 func ChangeUserStatus(user *gotgbot.User, status UserStatus) {
@@ -100,6 +128,35 @@ func EnablePrivacy(user *gotgbot.User) {
 
 func DisablePrivacy(user *gotgbot.User) {
 	ChangePrivacy(user, false)
+}
+
+func EnableUserWhisperHistory(user *gotgbot.User) {
+	ChangeUserWhisperHistory(user.Id, false)
+}
+
+func DisableUserWhisperHistory(user *gotgbot.User) {
+	ChangeUserWhisperHistory(user.Id, true)
+}
+
+func ClearUserWhisperHistory(userId int64) bool {
+	collection := GetUserHistory(userId)
+	if collection == nil || len(collection.History) == 0 {
+		return false
+	}
+
+	collection.Clear()
+
+	index := utils.GetDBIndex(userId)
+	session := wv.Core.SessionCollection.GetSession(index)
+	mutex := wv.Core.SessionCollection.GetMutex(index)
+
+	mutex.Lock()
+	session.Model(ModelUserHistory).Delete(
+		"owner_id = ?", userId,
+	)
+	mutex.Unlock()
+
+	return true
 }
 
 func GetUserData(userId int64) *UserData {
@@ -154,7 +211,7 @@ func UpdateUserData(data *UserData) {
 }
 
 func SaveInHistory(ownerId int64, target *gotgbot.User) {
-	if ownerId == target.Id {
+	if ownerId == target.Id || IsHistoryDisabled(ownerId) {
 		// don't save user itself in the history...
 		return
 	}

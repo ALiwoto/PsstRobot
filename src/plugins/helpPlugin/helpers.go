@@ -5,28 +5,57 @@ import (
 )
 
 func getMainMenuHelpButtons() *gotgbot.InlineKeyboardMarkup {
-	markup := &gotgbot.InlineKeyboardMarkup{}
-	markup.InlineKeyboard = make([][]gotgbot.InlineKeyboardButton, 3)
-	markup.InlineKeyboard[0] = append(markup.InlineKeyboard[0], gotgbot.InlineKeyboardButton{
-		Text:         "📖 Privacy Policy",
-		CallbackData: "privacy",
-	})
-	markup.InlineKeyboard[0] = append(markup.InlineKeyboard[0], gotgbot.InlineKeyboardButton{
-		Text:         "📝 Clear History",
-		CallbackData: "clear_history",
-	})
-	markup.InlineKeyboard[1] = append(markup.InlineKeyboard[1], gotgbot.InlineKeyboardButton{
-		Text:              "🧾 Try inline",
-		SwitchInlineQuery: new(string),
-	})
-	markup.InlineKeyboard[1] = append(markup.InlineKeyboard[1], gotgbot.InlineKeyboardButton{
-		Text: "🚑 Support group",
-		Url:  "https://t.me/KaizokuBots",
-	})
-	markup.InlineKeyboard[2] = append(markup.InlineKeyboard[2], gotgbot.InlineKeyboardButton{
-		Text: "☠️kaizoku",
-		Url:  "https://t.me/Kaizoku/158",
-	})
+	return &gotgbot.InlineKeyboardMarkup{
+		InlineKeyboard: [][]gotgbot.InlineKeyboardButton{
+			{
+				{
+					Text:         "📖 Privacy Policy",
+					CallbackData: "privacy",
+				},
+				{
+					Text:         "📝 Whisper history",
+					CallbackData: userWhisperHistoryData,
+				},
+			},
+			{
+				{
+					Text:              "🧾 Try inline",
+					SwitchInlineQuery: new(string),
+				},
+				{
+					Text: "🚑 Support group",
+					Url:  "https://t.me/KaizokuBots",
+				},
+			},
+			{
+				{
+					Text: "☠️kaizoku",
+					Url:  "https://t.me/Kaizoku/158",
+				},
+			},
+		},
+	}
+}
 
-	return markup
+func getUserWhisperHistoryButtons() *gotgbot.InlineKeyboardMarkup {
+	return &gotgbot.InlineKeyboardMarkup{
+		InlineKeyboard: [][]gotgbot.InlineKeyboardButton{
+			{
+				{
+					Text:         "Clear whisper history",
+					CallbackData: helpCommand,
+				},
+				{
+					Text:         "Disable whisper history",
+					CallbackData: helpCommand,
+				},
+			},
+			{
+				{
+					Text:         "🔙 Back",
+					CallbackData: helpCommand,
+				},
+			},
+		},
+	}
 }

@@ -94,6 +94,7 @@ func normalStartHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 	md.Normal(" whispers (long whispers and whispers with media).")
 
 	_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
+		ReplyMarkup:           getNormalStartButtons(),
 		ParseMode:             core.MarkdownV2,
 		DisableWebPagePreview: true,
 	})
