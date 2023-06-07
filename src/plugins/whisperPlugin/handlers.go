@@ -320,6 +320,19 @@ func generatorListenerFilter(msg *gotgbot.Message) bool {
 	return isPrivate(msg) && usersDatabase.IsUserCreating(msg.From)
 }
 
+func addToMapHandler(advanced *AdvancedWhisper) {
+	advancedWhisperMap.Add(advanced.OwnerId, advanced)
+	md := mdparser.GetNormal("This whisper is going to be sent to ")
+	md = md.AppendThis(advanced.GetTargetAsMd())
+	md.Normal(". \nPlease send the content to be whispered. ")
+	md.Normal("It can be text, photo, or any other type of media.")
+	_, _ = advanced.ctx.EffectiveMessage.Reply(advanced.bot, md.ToString(), &gotgbot.SendMessageOpts{
+		ParseMode:             core.MarkdownV2,
+		DisableWebPagePreview: true,
+		ReplyMarkup:           titleChosenMarkup,
+	})
+}
+
 func generatorListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 	user := ctx.EffectiveUser
 	message := ctx.EffectiveMessage
@@ -334,28 +347,12 @@ func generatorListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 			DisableWebPagePreview: true,
 		})
 	}
-	addToMap := func(advanced *AdvancedWhisper) {
-		advancedWhisperMutex.Lock()
-		advancedWhisperMap[advanced.OwnerId] = advanced
-		advancedWhisperMutex.Unlock()
-		md := mdparser.GetNormal("This whisper is going to be sent to ")
-		md = md.AppendThis(advanced.GetTargetAsMd())
-		md.Normal(". \nPlease send the content to be whispered. ")
-		md.Normal("It can be text, photo, or any other type of media.")
-		_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
-			ParseMode:             core.MarkdownV2,
-			DisableWebPagePreview: true,
-			ReplyMarkup:           titleChosenMarkup,
-		})
-	}
 
 	if len(text) > 0 && text[0][1:] == CancelWhisperData {
 		return cancelWhisperResponse(bot, ctx)
 	}
 
-	advancedWhisperMutex.Lock()
-	advanced := advancedWhisperMap[user.Id]
-	advancedWhisperMutex.Unlock()
+	advanced := advancedWhisperMap.Get(user.Id)
 
 	if advanced == nil {
 		// user still has to enter target's username or user-id.
@@ -366,7 +363,7 @@ func generatorListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 		}
 
 		if isEveryone(message.Text) {
-			addToMap(advanced)
+			addToMapHandler(advanced)
 			return ext.EndGroups
 		}
 
@@ -381,7 +378,7 @@ func generatorListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 			}
 		}
 
-		addToMap(advanced)
+		addToMapHandler(advanced)
 		return ext.EndGroups
 	}
 
@@ -427,9 +424,7 @@ func sendAdvancedWhisperResponse(w *AdvancedWhisper) {
 	// from telegram.
 	time.Sleep(time.Second * 2)
 
-	advancedWhisperMutex.Lock()
-	delete(advancedWhisperMap, w.OwnerId)
-	advancedWhisperMutex.Unlock()
+	advancedWhisperMap.Delete(w.OwnerId)
 
 	message := w.ctx.Message
 	whisper := w.ToWhisper()
@@ -464,7 +459,23 @@ func createHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 		return ext.EndGroups
 	}
 
-	usersDatabase.ChangeUserStatus(user, usersDatabase.UserStatusCreating)
+	usersDatabase.ChangeUserChatStatus(user, usersDatabase.UserChatStatusCreating)
+
+	myStrs := ws.SplitN(message.Text, 2, " ", "\n", "\t")
+	if len(myStrs) > 1 {
+		targetId := utils.ExtractUserId(myStrs[1])
+		targetUsername := utils.ExtractUsername(message.Text)
+		if targetId != 0 || targetUsername != "" {
+			addToMapHandler(&AdvancedWhisper{
+				bot:            bot,
+				ctx:            ctx,
+				OwnerId:        user.Id,
+				TargetId:       targetId,
+				TargetUsername: targetUsername,
+			})
+			return ext.EndGroups
+		}
+	}
 
 	md := mdparser.GetNormal("Preparing an advanced whisper. To cancel, type /cancel.")
 	md.Normal("\n\nSend me the target user's username or id.")

@@ -103,6 +103,10 @@ func ChangeUserStatus(user *gotgbot.User, status UserStatus) {
 	ChangeUserStatusById(user.Id, status)
 }
 
+func ChangeUserChatStatus(user *gotgbot.User, status UserChatStatus) {
+	ChangeUserChatStatusById(user.Id, status)
+}
+
 func ChangeUserStatusById(userId int64, status UserStatus) {
 	data := GetUserData(userId)
 	if data == nil {
@@ -119,6 +123,25 @@ func ChangeUserStatusById(userId int64, status UserStatus) {
 	}
 
 	data.Status = status
+	UpdateUserData(data)
+}
+
+func ChangeUserChatStatusById(userId int64, status UserChatStatus) {
+	data := GetUserData(userId)
+	if data == nil {
+		data = &UserData{
+			UserId: userId,
+		}
+
+		userDataMap.Add(userId, data)
+	}
+
+	if data.ChatStatus == status {
+		// prevent from sending unnecessary database queries
+		return
+	}
+
+	data.ChatStatus = status
 	UpdateUserData(data)
 }
 
@@ -185,17 +208,17 @@ func GetUserData(userId int64) *UserData {
 	return data
 }
 
-func GetUserStatus(user *gotgbot.User) UserStatus {
+func GetUserStatus(user *gotgbot.User) UserChatStatus {
 	data := GetUserData(user.Id)
 	if data == nil {
-		return UserStatusIdle
+		return UserChatStatusIdle
 	}
 
-	return data.Status
+	return data.ChatStatus
 }
 
 func IsUserCreating(user *gotgbot.User) bool {
-	return GetUserStatus(user) == UserStatusCreating
+	return GetUserStatus(user) == UserChatStatusCreating
 }
 
 func UpdateUserData(data *UserData) {

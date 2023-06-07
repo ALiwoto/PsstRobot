@@ -102,7 +102,7 @@ func (u *UserData) IsBanned() bool {
 }
 
 func (u *UserData) IsSendingData() bool {
-	return u.Status == UserStatusCreating
+	return u.ChatStatus == UserChatStatusCreating
 }
 
 func (u *UserData) IsIdle() bool {

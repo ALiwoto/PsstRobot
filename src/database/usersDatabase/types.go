@@ -4,7 +4,10 @@ import (
 	ws "github.com/AnimeKaizoku/ssg/ssg"
 )
 
-type UserStatus int
+type (
+	UserStatus     int
+	UserChatStatus int
+)
 
 type historyManager struct {
 	historyMap *ws.SafeEMap[int64, HistoryCollection]
@@ -24,7 +27,9 @@ type UserHistoryValue struct {
 
 type UserData struct {
 	UserId            int64      `json:"user_id" gorm:"primaryKey"`
-	Status            UserStatus `json:"status"`
+	Status            UserStatus `json:"user_status"`
 	PrivacyMode       bool       `json:"privacy_mode"`
 	IsHistoryDisabled bool       `json:"is_history_disabled"`
+
+	ChatStatus UserChatStatus `json:"-" gorm:"-" sql:"-"`
 }

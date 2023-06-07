@@ -1,8 +1,7 @@
 package whisperPlugin
 
 import (
-	"sync"
-
+	"github.com/AnimeKaizoku/ssg/ssg"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 )
 
@@ -24,6 +23,5 @@ var (
 )
 
 var (
-	advancedWhisperMap   = make(map[int64]*AdvancedWhisper)
-	advancedWhisperMutex = &sync.Mutex{}
+	advancedWhisperMap = ssg.NewSafeMap[int64, AdvancedWhisper]()
 )
