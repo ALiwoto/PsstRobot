@@ -17,16 +17,20 @@ import (
 // user's message to bot will exactly be "/start create".
 func answerForLongAdvanced(bot *gotgbot.Bot, ctx *ext.Context) error {
 	_, _ = ctx.InlineQuery.Answer(bot, nil, &gotgbot.AnswerInlineQueryOpts{
-		SwitchPmText:      "Too long! Use an advanced whisper!",
-		SwitchPmParameter: wv.StartDataCreate,
+		Button: &gotgbot.InlineQueryResultsButton{
+			Text:           "Too long! Use an advanced whisper!",
+			StartParameter: wv.StartDataCreate,
+		},
 	})
 	return ext.EndGroups
 }
 
 func answerForWrongAdvanced(bot *gotgbot.Bot, ctx *ext.Context) error {
 	_, _ = ctx.InlineQuery.Answer(bot, nil, &gotgbot.AnswerInlineQueryOpts{
-		SwitchPmText:      "Invalid advanced whisper! Please create another one!",
-		SwitchPmParameter: wv.StartDataCreate,
+		Button: &gotgbot.InlineQueryResultsButton{
+			Text:           "Invalid advanced whisper! Please create another one!",
+			StartParameter: wv.StartDataCreate,
+		},
 	})
 	return ext.EndGroups
 }
@@ -37,8 +41,10 @@ func answerForWrongAdvanced(bot *gotgbot.Bot, ctx *ext.Context) error {
 // user's message to bot will exactly be "/start help-inline".
 func answerForHelp(bot *gotgbot.Bot, ctx *ext.Context) error {
 	_, _ = ctx.InlineQuery.Answer(bot, nil, &gotgbot.AnswerInlineQueryOpts{
-		SwitchPmText:      "🔹 Learn how to send whispers to your friends!",
-		SwitchPmParameter: wv.HelpDataInline,
+		Button: &gotgbot.InlineQueryResultsButton{
+			Text:           "Invalid whisper! Please create another one!",
+			StartParameter: wv.HelpDataInline,
+		},
 	})
 	return ext.EndGroups
 }

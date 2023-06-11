@@ -112,8 +112,12 @@ func (u *UserData) IsIdle() bool {
 	return u.Status == UserStatusIdle || u.Status == UserStatusBanned
 }
 
-func (u *UserData) SetToIdle() {
+func (u *UserData) SetUserStatusToIdle() {
 	u.Status = UserStatusIdle
+}
+
+func (u *UserData) SetChatStatusToIdle() {
+	u.ChatStatus = UserChatStatusIdle
 }
 
 //---------------------------------------------------------

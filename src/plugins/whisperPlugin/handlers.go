@@ -302,9 +302,7 @@ func cancelWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 		return ext.EndGroups
 	}
 
-	data.SetToIdle()
-	usersDatabase.UpdateUserData(data)
-
+	data.SetChatStatusToIdle()
 	md := mdparser.GetNormal("The latest operation has been cancelled. ")
 	md.Normal("Anything else I can do for you?")
 	md.Normal("\n\nSend /help for a list of possible commands.")
