@@ -136,10 +136,19 @@ func ChangeUserChatStatusById(userId int64, status UserChatStatus) {
 	data := GetUserData(userId)
 	if data == nil {
 		data = &UserData{
-			UserId: userId,
+			UserId:     userId,
+			ChatStatus: status,
+		}
+		userDataMap.Add(userId, data)
+
+		if status == UserChatStatusIdle {
+			// there is no need to set a non-existing user's chat status to idle
+			// because the field is idle by default anyway.
+			return
 		}
 
-		userDataMap.Add(userId, data)
+		UpdateUserData(data)
+		return
 	}
 
 	if data.ChatStatus == status {
@@ -147,8 +156,8 @@ func ChangeUserChatStatusById(userId int64, status UserChatStatus) {
 		return
 	}
 
+	// well, ChatStatus is ignored in database anyway, no need to update it
 	data.ChatStatus = status
-	UpdateUserData(data)
 }
 
 func EnablePrivacy(user *gotgbot.User) {
