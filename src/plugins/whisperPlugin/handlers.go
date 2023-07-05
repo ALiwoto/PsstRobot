@@ -397,7 +397,7 @@ func generatorListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 	}
 
 	sendAdvancedWhisperResponse(advanced)
-	usersDatabase.ChangeUserStatus(user, usersDatabase.UserStatusIdle)
+	usersDatabase.ChangeUserChatStatus(user, usersDatabase.UserChatStatusIdle)
 
 	return ext.ContinueGroups
 }
@@ -434,7 +434,7 @@ func sendAdvancedWhisperResponse(w *AdvancedWhisper) {
 	)
 
 	whisperDatabase.AddWhisper(whisper)
-	usersDatabase.ChangeUserStatus(w.ctx.EffectiveUser, usersDatabase.UserStatusIdle)
+	usersDatabase.ChangeUserChatStatus(w.ctx.EffectiveUser, usersDatabase.UserChatStatusIdle)
 
 	md := mdparser.GetNormal("Done! The whisper is ready to be sent.")
 	md.Normal(". \nClick the button below to share it.")
