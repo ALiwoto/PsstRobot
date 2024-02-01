@@ -1,7 +1,7 @@
 package helpPlugin
 
 import (
-	"github.com/AnimeKaizoku/PsstRobot/src/database/usersDatabase"
+	"github.com/ALiwoto/PsstRobot/src/database/usersDatabase"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 )
 

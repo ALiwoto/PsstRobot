@@ -3,7 +3,7 @@ package whisperDatabase
 import (
 	"time"
 
-	"github.com/AnimeKaizoku/PsstRobot/src/core/utils"
+	"github.com/ALiwoto/PsstRobot/src/core/utils"
 )
 
 type WhisperType int

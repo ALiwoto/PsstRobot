@@ -1,7 +1,7 @@
 package whisperDatabase
 
 import (
-	"github.com/AnimeKaizoku/ssg/ssg"
+	"github.com/ALiwoto/ssg/ssg"
 )
 
 // database models

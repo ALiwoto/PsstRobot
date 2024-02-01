@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/AnimeKaizoku/PsstRobot/src/database/whisperDatabase"
+	"github.com/ALiwoto/PsstRobot/src/database/whisperDatabase"
 )
 
 func TestSplitting(t *testing.T) {

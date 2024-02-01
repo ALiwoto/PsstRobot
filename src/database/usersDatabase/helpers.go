@@ -3,10 +3,10 @@ package usersDatabase
 import (
 	"time"
 
-	"github.com/AnimeKaizoku/PsstRobot/src/core/utils"
-	"github.com/AnimeKaizoku/PsstRobot/src/core/wotoConfig"
-	wv "github.com/AnimeKaizoku/PsstRobot/src/core/wotoValues"
-	ws "github.com/AnimeKaizoku/ssg/ssg"
+	"github.com/ALiwoto/PsstRobot/src/core/utils"
+	"github.com/ALiwoto/PsstRobot/src/core/wotoConfig"
+	wv "github.com/ALiwoto/PsstRobot/src/core/wotoValues"
+	ws "github.com/ALiwoto/ssg/ssg"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 )
 

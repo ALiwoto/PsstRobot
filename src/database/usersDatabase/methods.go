@@ -3,8 +3,8 @@ package usersDatabase
 import (
 	"time"
 
-	"github.com/AnimeKaizoku/PsstRobot/src/core/utils"
-	"github.com/AnimeKaizoku/PsstRobot/src/core/wotoValues"
+	"github.com/ALiwoto/PsstRobot/src/core/utils"
+	"github.com/ALiwoto/PsstRobot/src/core/wotoValues"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 )
 

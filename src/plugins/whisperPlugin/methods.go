@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/ALiwoto/mdparser/mdparser"
-	"github.com/AnimeKaizoku/PsstRobot/src/database/whisperDatabase"
+	"github.com/ALiwoto/PsstRobot/src/database/whisperDatabase"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 )
 

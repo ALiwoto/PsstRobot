@@ -5,13 +5,13 @@ import (
 	"time"
 
 	"github.com/ALiwoto/mdparser/mdparser"
-	"github.com/AnimeKaizoku/PsstRobot/src/core"
-	"github.com/AnimeKaizoku/PsstRobot/src/core/logging"
-	"github.com/AnimeKaizoku/PsstRobot/src/core/utils"
-	wv "github.com/AnimeKaizoku/PsstRobot/src/core/wotoValues"
-	"github.com/AnimeKaizoku/PsstRobot/src/database/usersDatabase"
-	"github.com/AnimeKaizoku/PsstRobot/src/database/whisperDatabase"
-	ws "github.com/AnimeKaizoku/ssg/ssg"
+	"github.com/ALiwoto/PsstRobot/src/core"
+	"github.com/ALiwoto/PsstRobot/src/core/logging"
+	"github.com/ALiwoto/PsstRobot/src/core/utils"
+	wv "github.com/ALiwoto/PsstRobot/src/core/wotoValues"
+	"github.com/ALiwoto/PsstRobot/src/database/usersDatabase"
+	"github.com/ALiwoto/PsstRobot/src/database/whisperDatabase"
+	ws "github.com/ALiwoto/ssg/ssg"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
 )
@@ -261,7 +261,7 @@ func chosenWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 
 		// No need to edit the message if the message is an advanced whisper
 		// message.
-		// See also: https://github.com/AnimeKaizoku/PsstRobot/issues/2
+		// See also: https://github.com/ALiwoto/PsstRobot/issues/2
 		return ext.EndGroups
 	} else {
 		w = whisperDatabase.CreateNewWhisperFromChosen(result)

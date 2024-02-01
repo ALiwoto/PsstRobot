@@ -5,12 +5,12 @@ import (
 	"strings"
 
 	"github.com/ALiwoto/mdparser/mdparser"
-	"github.com/AnimeKaizoku/PsstRobot/src/core"
-	"github.com/AnimeKaizoku/PsstRobot/src/core/utils"
-	wv "github.com/AnimeKaizoku/PsstRobot/src/core/wotoValues"
-	"github.com/AnimeKaizoku/PsstRobot/src/database/usersDatabase"
-	"github.com/AnimeKaizoku/PsstRobot/src/database/whisperDatabase"
-	"github.com/AnimeKaizoku/ssg/ssg"
+	"github.com/ALiwoto/PsstRobot/src/core"
+	"github.com/ALiwoto/PsstRobot/src/core/utils"
+	wv "github.com/ALiwoto/PsstRobot/src/core/wotoValues"
+	"github.com/ALiwoto/PsstRobot/src/database/usersDatabase"
+	"github.com/ALiwoto/PsstRobot/src/database/whisperDatabase"
+	"github.com/ALiwoto/ssg/ssg"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
 )

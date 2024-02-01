@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/ALiwoto/mdparser/mdparser"
-	"github.com/AnimeKaizoku/PsstRobot/src/core/utils"
-	wv "github.com/AnimeKaizoku/PsstRobot/src/core/wotoValues"
+	"github.com/ALiwoto/PsstRobot/src/core/utils"
+	wv "github.com/ALiwoto/PsstRobot/src/core/wotoValues"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 )
 

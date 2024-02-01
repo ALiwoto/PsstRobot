@@ -1,9 +1,9 @@
 package plugins
 
 import (
-	"github.com/AnimeKaizoku/PsstRobot/src/plugins/helpPlugin"
-	"github.com/AnimeKaizoku/PsstRobot/src/plugins/startPlugin"
-	"github.com/AnimeKaizoku/PsstRobot/src/plugins/whisperPlugin"
+	"github.com/ALiwoto/PsstRobot/src/plugins/helpPlugin"
+	"github.com/ALiwoto/PsstRobot/src/plugins/startPlugin"
+	"github.com/ALiwoto/PsstRobot/src/plugins/whisperPlugin"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
 )
 

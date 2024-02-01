@@ -1,7 +1,7 @@
 package helpPlugin
 
 import (
-	wv "github.com/AnimeKaizoku/PsstRobot/src/core/wotoValues"
+	wv "github.com/ALiwoto/PsstRobot/src/core/wotoValues"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext/handlers"
 )

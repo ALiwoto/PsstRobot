@@ -3,7 +3,7 @@ package wotoConfig
 import (
 	"time"
 
-	"github.com/AnimeKaizoku/ssg/ssg"
+	"github.com/ALiwoto/ssg/ssg"
 )
 
 func ParseConfig(configFile string) (*PsstBotConfig, error) {

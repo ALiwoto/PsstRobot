@@ -2,8 +2,8 @@ package helpPlugin
 
 import (
 	"github.com/ALiwoto/mdparser/mdparser"
-	"github.com/AnimeKaizoku/PsstRobot/src/core"
-	"github.com/AnimeKaizoku/PsstRobot/src/database/usersDatabase"
+	"github.com/ALiwoto/PsstRobot/src/core"
+	"github.com/ALiwoto/PsstRobot/src/database/usersDatabase"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
 )

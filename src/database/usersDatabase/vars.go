@@ -1,7 +1,7 @@
 package usersDatabase
 
 import (
-	ws "github.com/AnimeKaizoku/ssg/ssg"
+	ws "github.com/ALiwoto/ssg/ssg"
 )
 
 // database models

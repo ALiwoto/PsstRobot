@@ -1,7 +1,9 @@
 github.com/ALiwoto/mdparser v1.1.2 h1:weZU4pGIqJBwYrmJX9ncQIUrTcAxSSB0pexGUtXJcZI=
 github.com/ALiwoto/mdparser v1.1.2/go.mod h1:YL/F0SIvpRgP5iTip4t3qXdwg4X0OZCS/+dHKbdAgWc=
-github.com/AnimeKaizoku/ssg v1.1.31 h1:dbfKB9EGuedL7al4Dal9NqYVFS0R3DB4FiFeX6jrro0=
-github.com/AnimeKaizoku/ssg v1.1.31/go.mod h1:9+l9BoznXt8p3dkxVKv3dwIyogFeUhnrnihW4rOMNJE=
+github.com/ALiwoto/ssg v1.1.33 h1:Sdo1c3w/9bMfWOklTw9tvlYOJ29lUrkX1U2ACsFUGJQ=
+github.com/ALiwoto/ssg v1.1.33/go.mod h1:JWd/TNG+W7jgYx2T6froWweVo76XUVwSwruYCimeWuQ=
+github.com/AnimeKaizoku/ssg v1.1.2 h1:Zodd1IzYdrZV+sagA4OgBc2ef4IjyJqAJEFgGWpqnfU=
+github.com/AnimeKaizoku/ssg v1.1.2/go.mod h1:t4sH9GQLurVu09o7BOw1cBG/PXBGq5cLw5unu112uuo=
 github.com/PaulSonOfLars/gotgbot/v2 v2.0.0-rc.20 h1:LgJ2DwqvtvvUOMS2q7IdeaLS1olDUQqDZ4GZliQZAPM=
 github.com/PaulSonOfLars/gotgbot/v2 v2.0.0-rc.20/go.mod h1:r815fYWTudnU9JhtsJAxUtuV7QrSgKpChJkfTSMFpfg=
 github.com/benbjohnson/clock v1.1.0 h1:Q92kusRqC1XV2MjkWETPvjJVqKetz1OzxZB7mHJLju8=
