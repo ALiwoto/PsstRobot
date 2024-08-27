@@ -54,7 +54,7 @@ func GetIntervalCheck() time.Duration {
 }
 
 func GetExpiry() time.Duration {
-	if ConfigSettings != nil {
+	if ConfigSettings != nil && ConfigSettings.MaxExpiry >= 1 {
 		return time.Duration(ConfigSettings.MaxExpiry) * (24 * time.Hour)
 	}
 

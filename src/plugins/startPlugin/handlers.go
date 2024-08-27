@@ -4,12 +4,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ALiwoto/mdparser/mdparser"
 	"github.com/ALiwoto/PsstRobot/src/core"
 	"github.com/ALiwoto/PsstRobot/src/core/utils"
 	wv "github.com/ALiwoto/PsstRobot/src/core/wotoValues"
 	"github.com/ALiwoto/PsstRobot/src/database/usersDatabase"
 	"github.com/ALiwoto/PsstRobot/src/database/whisperDatabase"
+	"github.com/ALiwoto/mdparser/mdparser"
 	"github.com/ALiwoto/ssg/ssg"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
@@ -74,9 +74,11 @@ func privacyHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 	}
 
 	_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
-		ParseMode:                core.MarkdownV2,
-		DisableWebPagePreview:    true,
-		AllowSendingWithoutReply: true,
+		ParseMode:          core.MarkdownV2,
+		LinkPreviewOptions: wv.DisabledWebPagePreview,
+		ReplyParameters: &gotgbot.ReplyParameters{
+			AllowSendingWithoutReply: true,
+		},
 	})
 	return ext.EndGroups
 }
@@ -94,9 +96,9 @@ func normalStartHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 	md.Normal(" whispers (long whispers and whispers with media).")
 
 	_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
-		ReplyMarkup:           getNormalStartButtons(),
-		ParseMode:             core.MarkdownV2,
-		DisableWebPagePreview: true,
+		ReplyMarkup:        getNormalStartButtons(),
+		ParseMode:          core.MarkdownV2,
+		LinkPreviewOptions: wv.DisabledWebPagePreview,
 	})
 
 	return ext.EndGroups
@@ -145,9 +147,11 @@ func sendWhisperText(bot *gotgbot.Bot, ctx *ext.Context) error {
 	}
 
 	_, _ = message.Reply(bot, text.ToString(), &gotgbot.SendMessageOpts{
-		ParseMode:                core.MarkdownV2,
-		DisableWebPagePreview:    true,
-		AllowSendingWithoutReply: true,
+		ParseMode:          core.MarkdownV2,
+		LinkPreviewOptions: wv.DisabledWebPagePreview,
+		ReplyParameters: &gotgbot.ReplyParameters{
+			AllowSendingWithoutReply: true,
+		},
 	})
 
 	if w.Type != whisperDatabase.WhisperTypePlainText {
@@ -165,35 +169,35 @@ func sendWhisperText(bot *gotgbot.Bot, ctx *ext.Context) error {
 			//WhisperTypeAnimation
 			//WhisperTypeDice
 			case whisperDatabase.WhisperTypePhoto:
-				_, _ = bot.SendPhoto(user.Id, w.FileId, &gotgbot.SendPhotoOpts{
+				_, _ = bot.SendPhoto(user.Id, gotgbot.InputFileByID(w.FileId), &gotgbot.SendPhotoOpts{
 					Caption: w.Text,
 				})
 			case whisperDatabase.WhisperTypeVideo:
-				_, _ = bot.SendVideo(user.Id, w.FileId, &gotgbot.SendVideoOpts{
+				_, _ = bot.SendVideo(user.Id, gotgbot.InputFileByID(w.FileId), &gotgbot.SendVideoOpts{
 					Caption: w.Text,
 				})
 			case whisperDatabase.WhisperTypeAudio:
-				_, _ = bot.SendAudio(user.Id, w.FileId, &gotgbot.SendAudioOpts{
+				_, _ = bot.SendAudio(user.Id, gotgbot.InputFileByID(w.FileId), &gotgbot.SendAudioOpts{
 					Caption: w.Text,
 				})
 			case whisperDatabase.WhisperTypeVoice:
-				_, _ = bot.SendVoice(user.Id, w.FileId, &gotgbot.SendVoiceOpts{
+				_, _ = bot.SendVoice(user.Id, gotgbot.InputFileByID(w.FileId), &gotgbot.SendVoiceOpts{
 					Caption: w.Text,
 				})
 			case whisperDatabase.WhisperTypeSticker:
-				_, _ = bot.SendSticker(user.Id, w.FileId, &gotgbot.SendStickerOpts{
+				_, _ = bot.SendSticker(user.Id, gotgbot.InputFileByID(w.FileId), &gotgbot.SendStickerOpts{
 					//Caption: w.Text,
 				})
 			case whisperDatabase.WhisperTypeDocument:
-				_, _ = bot.SendDocument(user.Id, w.FileId, &gotgbot.SendDocumentOpts{
+				_, _ = bot.SendDocument(user.Id, gotgbot.InputFileByID(w.FileId), &gotgbot.SendDocumentOpts{
 					Caption: w.Text,
 				})
 			case whisperDatabase.WhisperTypeVideoNote:
-				_, _ = bot.SendVideoNote(user.Id, w.FileId, &gotgbot.SendVideoNoteOpts{
+				_, _ = bot.SendVideoNote(user.Id, gotgbot.InputFileByID(w.FileId), &gotgbot.SendVideoNoteOpts{
 					//Caption: w.Text,
 				})
 			case whisperDatabase.WhisperTypeAnimation:
-				_, _ = bot.SendAnimation(user.Id, w.FileId, &gotgbot.SendAnimationOpts{
+				_, _ = bot.SendAnimation(user.Id, gotgbot.InputFileByID(w.FileId), &gotgbot.SendAnimationOpts{
 					Caption: w.Text,
 				})
 			case whisperDatabase.WhisperTypeDice:
@@ -209,9 +213,9 @@ func sendWhisperText(bot *gotgbot.Bot, ctx *ext.Context) error {
 		md := mdparser.GetUserMention(user.FirstName, user.Id)
 		md.Normal(" read the whisper")
 		_, _, _ = bot.EditMessageText(md.ToString(), &gotgbot.EditMessageTextOpts{
-			InlineMessageId:       w.InlineMessageId,
-			ParseMode:             core.MarkdownV2,
-			DisableWebPagePreview: true,
+			InlineMessageId:    w.InlineMessageId,
+			ParseMode:          core.MarkdownV2,
+			LinkPreviewOptions: wv.DisabledWebPagePreview,
 		})
 
 		whisperDatabase.RemoveWhisper(w)

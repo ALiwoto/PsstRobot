@@ -1,9 +1,10 @@
 package helpPlugin
 
 import (
-	"github.com/ALiwoto/mdparser/mdparser"
 	"github.com/ALiwoto/PsstRobot/src/core"
+	wv "github.com/ALiwoto/PsstRobot/src/core/wotoValues"
 	"github.com/ALiwoto/PsstRobot/src/database/usersDatabase"
+	"github.com/ALiwoto/mdparser/mdparser"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
 )
@@ -44,15 +45,15 @@ func helpHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 
 	if message.From.Id == bot.Id {
 		_, _, _ = message.EditText(bot, md.ToString(), &gotgbot.EditMessageTextOpts{
-			ReplyMarkup:           *getMainMenuHelpButtons(),
-			ParseMode:             core.MarkdownV2,
-			DisableWebPagePreview: true,
+			ReplyMarkup:        *getMainMenuHelpButtons(),
+			ParseMode:          core.MarkdownV2,
+			LinkPreviewOptions: wv.DisabledWebPagePreview,
 		})
 	} else {
 		_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
-			ReplyMarkup:           getMainMenuHelpButtons(),
-			ParseMode:             core.MarkdownV2,
-			DisableWebPagePreview: true,
+			ReplyMarkup:        getMainMenuHelpButtons(),
+			ParseMode:          core.MarkdownV2,
+			LinkPreviewOptions: wv.DisabledWebPagePreview,
 		})
 	}
 

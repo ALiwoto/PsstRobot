@@ -7,6 +7,7 @@ import (
 	"github.com/ALiwoto/PsstRobot/src/core/wotoConfig"
 	wv "github.com/ALiwoto/PsstRobot/src/core/wotoValues"
 	"github.com/PaulSonOfLars/gotgbot/v2"
+	"gorm.io/gorm"
 )
 
 func LoadAllWhispers() {
@@ -14,6 +15,7 @@ func LoadAllWhispers() {
 	allMutexes := wv.Core.GetAllDBMutexes()
 
 	var mutex *sync.Mutex
+	expiration := wotoConfig.GetExpiry()
 
 	for i, current := range allSessions {
 		if current == nil {
@@ -23,12 +25,22 @@ func LoadAllWhispers() {
 		mutex.Lock()
 
 		var whispers []Whisper
+		var expiredWhispers []Whisper
 		current.Find(&whispers)
 
-		for _, whisper := range whispers {
+		for currentIndex := 0; currentIndex < len(whispers); currentIndex++ {
+			whisper := whispers[currentIndex]
+			if whisper.IsExpired(expiration) {
+				expiredWhispers = append(expiredWhispers, whisper)
+				continue
+			}
+
 			whispersMap.Add(whisper.UniqueId, &whisper)
 		}
 
+		if len(expiredWhispers) > 0 {
+			removeWhispersDBNoLock(expiredWhispers, current)
+		}
 		mutex.Unlock()
 	}
 
@@ -52,7 +64,7 @@ func AddWhisper(w *Whisper) {
 	mutex := wv.Core.SessionCollection.GetMutex(index)
 	mutex.Lock()
 	tx := s.Begin()
-	tx.Save(w)
+	tx.Create(w)
 	tx.Commit()
 	mutex.Unlock()
 
@@ -102,14 +114,29 @@ func removeWhisperDB(w *Whisper) {
 	mutex.Unlock()
 }
 
+// removeWhisperDBNoLock will remove the specified whisper ONLY from database.
+// this function is an internal function to prevent from deadlock.
+func removeWhispersDBNoLock(w []Whisper, db *gorm.DB) {
+	tx := db.Begin()
+	for currentIndex := 0; currentIndex < len(w); currentIndex++ {
+		tx.Delete(w[currentIndex])
+	}
+	tx.Commit()
+}
+
 func checkWhispers() {
 	interval := wotoConfig.GetIntervalCheck()
 	expiry := wotoConfig.GetExpiry()
 	whispersMap.SetExpiration(expiry)
-	whispersMap.SetOnExpired(func(key string, value Whisper) {
-		removeWhisperDB(&value)
+	whispersMap.SetOnExpiredPtr(func(key string, value *Whisper) {
+		removeWhisperDB(value)
 	})
 
+	if interval < time.Minute {
+		// internal less than 1 minute will fill up the cpu usage
+		// it's wisely advised to not use values less than 1 minute.
+		interval = time.Minute
+	}
 	for {
 		time.Sleep(interval)
 		if whispersMap == nil {

@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ALiwoto/mdparser/mdparser"
 	"github.com/ALiwoto/PsstRobot/src/core/utils"
 	wv "github.com/ALiwoto/PsstRobot/src/core/wotoValues"
+	"github.com/ALiwoto/mdparser/mdparser"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 )
 
@@ -95,9 +95,9 @@ func (w *Whisper) GetInlineDescription() string {
 
 func (w *Whisper) GetInputMessageContent(bot *gotgbot.Bot) *gotgbot.InputTextMessageContent {
 	return &gotgbot.InputTextMessageContent{
-		MessageText:           w.ParseAsMd(bot).ToString(),
-		ParseMode:             gotgbot.ParseModeMarkdownV2,
-		DisableWebPagePreview: true,
+		MessageText:        w.ParseAsMd(bot).ToString(),
+		ParseMode:          gotgbot.ParseModeMarkdownV2,
+		LinkPreviewOptions: wv.DisabledWebPagePreview,
 	}
 }
 
@@ -154,7 +154,7 @@ func (w *Whisper) getDocumentArray() []gotgbot.InputMedia {
 	captions := w.getCaptions()
 	for i, current := range files {
 		myArray = append(myArray, gotgbot.InputMediaDocument{
-			Media:   current,
+			Media:   gotgbot.InputFileByID(current),
 			Caption: captions[i],
 		})
 	}
@@ -175,7 +175,7 @@ func (w *Whisper) getAudioArray() []gotgbot.InputMedia {
 	captions := w.getCaptions()
 	for i, current := range files {
 		myArray = append(myArray, gotgbot.InputMediaAudio{
-			Media:   current,
+			Media:   gotgbot.InputFileByID(current),
 			Caption: captions[i],
 		})
 	}
@@ -196,7 +196,7 @@ func (w *Whisper) getVideoArray() []gotgbot.InputMedia {
 	captions := w.getCaptions()
 	for i, current := range files {
 		myArray = append(myArray, gotgbot.InputMediaVideo{
-			Media:   current,
+			Media:   gotgbot.InputFileByID(current),
 			Caption: captions[i],
 		})
 	}
@@ -217,7 +217,7 @@ func (w *Whisper) getPhotoArray() []gotgbot.InputMedia {
 	captions := w.getCaptions()
 	for i, current := range files {
 		myArray = append(myArray, gotgbot.InputMediaPhoto{
-			Media:   current,
+			Media:   gotgbot.InputFileByID(current),
 			Caption: captions[i],
 		})
 	}
@@ -238,7 +238,7 @@ func (w *Whisper) getAnimationArray() []gotgbot.InputMedia {
 	captions := w.getCaptions()
 	for i, current := range files {
 		myArray = append(myArray, gotgbot.InputMediaAnimation{
-			Media:   current,
+			Media:   gotgbot.InputFileByID(current),
 			Caption: captions[i],
 		})
 	}

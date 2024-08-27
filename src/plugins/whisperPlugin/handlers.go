@@ -4,13 +4,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ALiwoto/mdparser/mdparser"
 	"github.com/ALiwoto/PsstRobot/src/core"
 	"github.com/ALiwoto/PsstRobot/src/core/logging"
 	"github.com/ALiwoto/PsstRobot/src/core/utils"
 	wv "github.com/ALiwoto/PsstRobot/src/core/wotoValues"
 	"github.com/ALiwoto/PsstRobot/src/database/usersDatabase"
 	"github.com/ALiwoto/PsstRobot/src/database/whisperDatabase"
+	"github.com/ALiwoto/mdparser/mdparser"
 	ws "github.com/ALiwoto/ssg/ssg"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
@@ -78,9 +78,9 @@ func showWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 				md := mdparser.GetUserMention(user.FirstName, user.Id)
 				md.Normal(" read the whisper")
 				_, ok, _ := bot.EditMessageText(md.ToString(), &gotgbot.EditMessageTextOpts{
-					InlineMessageId:       query.InlineMessageId,
-					ParseMode:             core.MarkdownV2,
-					DisableWebPagePreview: true,
+					InlineMessageId:    query.InlineMessageId,
+					ParseMode:          core.MarkdownV2,
+					LinkPreviewOptions: wv.DisabledWebPagePreview,
 				})
 				if !ok {
 					return ext.EndGroups
@@ -176,7 +176,7 @@ func sendWhisperResponse(bot *gotgbot.Bot, ctx *ext.Context) error {
 			title = "📖 A whisper message to anyone!"
 			description = "Everyone will be able to open this whisper."
 		} else if result.TargetID > 0 {
-			var chat *gotgbot.Chat
+			var chat *gotgbot.ChatFullInfo
 			var err error
 			chat, err = bot.GetChat(result.TargetID, nil)
 			if err == nil && chat != nil {
@@ -325,9 +325,9 @@ func addToMapHandler(advanced *AdvancedWhisper) {
 	md.Normal(". \nPlease send the content to be whispered. ")
 	md.Normal("It can be text, photo, or any other type of media.")
 	_, _ = advanced.ctx.EffectiveMessage.Reply(advanced.bot, md.ToString(), &gotgbot.SendMessageOpts{
-		ParseMode:             core.MarkdownV2,
-		DisableWebPagePreview: true,
-		ReplyMarkup:           titleChosenMarkup,
+		ParseMode:          core.MarkdownV2,
+		LinkPreviewOptions: wv.DisabledWebPagePreview,
+		ReplyMarkup:        titleChosenMarkup,
 	})
 }
 
@@ -341,8 +341,8 @@ func generatorListenerHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 		md.Normal("\nYou can also enter \"everyone\" if you want everyone")
 		md.Normal("to be able to see the whisper.")
 		_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
-			ParseMode:             core.MarkdownV2,
-			DisableWebPagePreview: true,
+			ParseMode:          core.MarkdownV2,
+			LinkPreviewOptions: wv.DisabledWebPagePreview,
 		})
 	}
 
@@ -412,7 +412,11 @@ func mediaGroupListenerHandler(advanced *AdvancedWhisper, ctx *ext.Context) erro
 		go sendAdvancedWhisperResponse(advanced)
 	}
 
-	advanced.MediaGroup.AddElement(advanced.ctx.Message)
+	targetMessage := advanced.ctx.Message
+	if targetMessage == nil {
+		targetMessage = ctx.Message
+	}
+	advanced.MediaGroup.AddElement(targetMessage)
 
 	return ext.ContinueGroups
 }
@@ -440,10 +444,12 @@ func sendAdvancedWhisperResponse(w *AdvancedWhisper) {
 	md.Normal(". \nClick the button below to share it.")
 
 	_, _ = message.Reply(w.bot, md.ToString(), &gotgbot.SendMessageOpts{
-		ParseMode:                core.MarkdownV2,
-		AllowSendingWithoutReply: true,
-		DisableWebPagePreview:    true,
-		ReplyMarkup:              markup,
+		ParseMode:          core.MarkdownV2,
+		LinkPreviewOptions: wv.DisabledWebPagePreview,
+		ReplyParameters: &gotgbot.ReplyParameters{
+			AllowSendingWithoutReply: true,
+		},
+		ReplyMarkup: markup,
 	})
 }
 
@@ -481,9 +487,11 @@ func createHandler(bot *gotgbot.Bot, ctx *ext.Context) error {
 	md.Normal(" in a chat.")
 
 	_, _ = message.Reply(bot, md.ToString(), &gotgbot.SendMessageOpts{
-		ParseMode:                core.MarkdownV2,
-		AllowSendingWithoutReply: true,
-		DisableWebPagePreview:    true,
+		ParseMode:          core.MarkdownV2,
+		LinkPreviewOptions: wv.DisabledWebPagePreview,
+		ReplyParameters: &gotgbot.ReplyParameters{
+			AllowSendingWithoutReply: true,
+		},
 	})
 
 	return ext.EndGroups

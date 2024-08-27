@@ -1,6 +1,7 @@
 package wotoValues
 
 import (
+	"github.com/PaulSonOfLars/gotgbot/v2"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext/handlers"
 )
 
@@ -15,4 +16,11 @@ var (
 	// to the user.
 	// set in `path://src/plugins/helpPlugin/helpers.go`.
 	HelpHandler handlers.Response
+)
+
+// common variables that can be used everywhere (hopefully)
+var (
+	DisabledWebPagePreview = &gotgbot.LinkPreviewOptions{
+		IsDisabled: true,
+	}
 )

@@ -3,7 +3,6 @@ package plugins
 import (
 	"errors"
 	"fmt"
-	"net/http"
 
 	"github.com/ALiwoto/PsstRobot/src/core/logging"
 	"github.com/ALiwoto/PsstRobot/src/core/wotoConfig"
@@ -18,8 +17,7 @@ func StartTelegramBot() error {
 	}
 
 	b, err := gotgbot.NewBot(token, &gotgbot.BotOpts{
-		Client: http.Client{},
-		DefaultRequestOpts: &gotgbot.RequestOpts{
+		RequestOpts: &gotgbot.RequestOpts{
 			Timeout: 6 * gotgbot.DefaultTimeout,
 		},
 	})
@@ -27,20 +25,14 @@ func StartTelegramBot() error {
 		return err
 	}
 
-	uOptions := &ext.UpdaterOpts{
-		Dispatcher: ext.NewDispatcher(&ext.DispatcherOpts{
-			MaxRoutines: -1,
-		}),
-	}
+	dispatcher := ext.NewDispatcher(&ext.DispatcherOpts{
+		MaxRoutines: -1,
+	})
 
-	updater := ext.NewUpdater(uOptions)
+	updater := ext.NewUpdater(dispatcher, nil)
 	err = updater.StartPolling(b, &ext.PollingOpts{
-		DropPendingUpdates: false,
-		GetUpdatesOpts: gotgbot.GetUpdatesOpts{
-			Timeout: 30,
-			RequestOpts: &gotgbot.RequestOpts{
-				Timeout: 6 * gotgbot.DefaultTimeout,
-			},
+		DropPendingUpdates: true, // we don't want the bot to spam people's pm after being down for a while
+		GetUpdatesOpts: &gotgbot.GetUpdatesOpts{
 			AllowedUpdates: []string{
 				gotgbot.UpdateTypeMessage,
 				gotgbot.UpdateTypeEditedMessage,
@@ -57,6 +49,10 @@ func StartTelegramBot() error {
 				// gotgbot.UpdateTypeChatMember,
 				// gotgbot.UpdateTypeChatJoinRequest,
 			},
+			Timeout: 30,
+			RequestOpts: &gotgbot.RequestOpts{
+				Timeout: 6 * gotgbot.DefaultTimeout,
+			},
 		},
 	})
 	if err != nil {
@@ -65,7 +61,7 @@ func StartTelegramBot() error {
 
 	logging.Info(fmt.Sprintf("%s has started | ID: %d", b.Username, b.Id))
 
-	LoadAllHandlers(updater.Dispatcher, wotoConfig.GetCmdPrefixes())
+	LoadAllHandlers(dispatcher, wotoConfig.GetCmdPrefixes())
 
 	updater.Idle()
 	return nil
